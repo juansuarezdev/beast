@@ -1663,4 +1663,7 @@ export default {
   'Teal': 'Turquoise',
   'Yellow': 'Jaune',
   'Enter how long it took — at least 1 minute.': 'Indique combien de temps ça a duré — au moins 1 minute.',
+  'Save workouts to Apple Health': 'Enregistrer les séances dans Apple Santé',
+  'Writes each finished workout to Apple Health so apps like Bevel can count it.': 'Écrit chaque séance terminée dans Apple Santé pour que des apps comme Bevel la comptent.',
+  'Couldn’t reach Apple Health.': 'Impossible d’accéder à Apple Santé.',
 }

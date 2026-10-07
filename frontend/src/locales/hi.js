@@ -1663,4 +1663,7 @@ export default {
   'Teal': 'फ़िरोज़ी',
   'Yellow': 'पीला',
   'Enter how long it took — at least 1 minute.': 'बताएँ कि इसमें कितना समय लगा — कम से कम 1 मिनट।',
+  'Save workouts to Apple Health': 'वर्कआउट Apple Health में सहेजें',
+  'Writes each finished workout to Apple Health so apps like Bevel can count it.': 'हर पूरा वर्कआउट Apple Health में लिखता है ताकि Bevel जैसे ऐप उसे गिन सकें।',
+  'Couldn’t reach Apple Health.': 'Apple Health तक नहीं पहुँच सके।',
 }

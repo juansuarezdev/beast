@@ -1674,4 +1674,7 @@ export default {
   'Teal': 'เขียวน้ำทะเล',
   'Yellow': 'เหลือง',
   'Enter how long it took — at least 1 minute.': 'ใส่ระยะเวลาที่ใช้ — อย่างน้อย 1 นาที',
+  'Save workouts to Apple Health': 'บันทึกการออกกำลังกายลง Apple Health',
+  'Writes each finished workout to Apple Health so apps like Bevel can count it.': 'เขียนการออกกำลังกายที่เสร็จแล้วลง Apple Health เพื่อให้แอปอย่าง Bevel นับได้',
+  'Couldn’t reach Apple Health.': 'เข้าถึง Apple Health ไม่ได้',
 }

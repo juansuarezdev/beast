@@ -1663,4 +1663,7 @@ export default {
   'Teal': '청록',
   'Yellow': '노랑',
   'Enter how long it took — at least 1 minute.': '걸린 시간을 입력하세요 — 최소 1분.',
+  'Save workouts to Apple Health': '운동을 Apple 건강에 저장',
+  'Writes each finished workout to Apple Health so apps like Bevel can count it.': '완료한 운동을 Apple 건강에 기록해 Bevel 같은 앱이 집계할 수 있게 합니다.',
+  'Couldn’t reach Apple Health.': 'Apple 건강에 접근할 수 없습니다.',
 }

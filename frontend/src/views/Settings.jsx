@@ -15,6 +15,7 @@ import { wakeLockSupported } from '../lib/wakelock.js'
 import { t, LANGS, INSTR_LANGS, EXERCISE_NAME_LANGS, baseLang } from '../lib/i18n.js'
 import { effectiveLang } from '../lib/default-lang.js'
 import { DEMO, REPO } from '../lib/demo.js'
+import { isHealthAvailable, requestHealthAccess } from '../lib/health.js'
 import { MOBILE, isAndroid, shareExport, shareExportBlob, syncReminder } from '../lib/mobile.js'
 import { referencedFiles } from '../lib/media-refs.js'
 import { mediaStore } from '../lib/media-store.js'
@@ -71,6 +72,7 @@ export default function Settings() {
   // --- update check state ---
   const [updateInfo, setUpdateInfo] = useState(null) // { hasUpdate, latestVersion, apkUrl, hashUrl } | null
   const [android, setAndroid] = useState(false)
+  const [healthOK, setHealthOK] = useState(false)
   const [checking, setChecking] = useState(false)
 
   useEffect(() => {
@@ -80,6 +82,7 @@ export default function Settings() {
     // from even asking (and from calling gitlab.com on every Settings visit).
     if (!MOBILE) return
     isAndroid().then(ok => { setAndroid(ok); if (ok) checkForUpdate().then(setUpdateInfo).catch(() => {}) })
+    isHealthAvailable().then(setHealthOK)
   }, [])
 
   // The same check, on demand: the automatic one is silent when it finds nothing or cannot
@@ -414,6 +417,16 @@ export default function Settings() {
           value={['list', 'compact'].includes(S.workoutView) ? S.workoutView : 'cards'}
           onChange={v => update(s => { s.workoutView = v })} />
       </Row>
+      {/* Native iOS app only (HealthKit does not exist in a browser or on Android): each finished
+          live session is written to Apple Health as a strength workout, which Bevel, Fitness and
+          the like then read. Turning it on shows the iOS permission sheet. */}
+      {healthOK && <Row icon="heart" iconTint="var(--red)" title={t('Save workouts to Apple Health')}
+        subtitle={t('Writes each finished workout to Apple Health so apps like Bevel can count it.')}>
+        <Switch checked={!!S.healthSync} onChange={async v => {
+          if (v && !(await requestHealthAccess())) { toast(t('Couldn’t reach Apple Health.')); return }
+          update(s => { s.healthSync = v })
+        }} />
+      </Row>}
       {/* Whose reps a planned session opens with (lib/session-start.js). The plan's by default:
           the routine is what you said you would do, and history and progression decide the
           weight. The other choice is the old behaviour, reps carried over from last time.

@@ -85,6 +85,8 @@ export const DEF = {
   // 'cards' behaviour. beginWorkout copies the value onto s.active, so the header ⋮ menu can
   // override it for the running session without touching this saved default.
   workoutView: 'cards',
+  // Native iOS app only: write each finished live session to Apple Health as a strength workout.
+  healthSync: false,
   // Which controls the workout screen shows besides the sets themselves. The default is the
   // lean layout: one "more" button per exercise and a menu on each set number. Every switch
   // brings one of the old always-visible button groups back (Settings → During a workout).

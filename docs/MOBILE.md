@@ -154,6 +154,20 @@ into both native projects — re-run it after every web-code change before build
 > **Heads-up:** after `build:mobile`, `frontend/dist` contains the *mobile* bundle.
 > Run a plain `npm run build` again before deploying `dist` to a server.
 
+## Apple Health (iOS)
+
+The native iOS app can write each finished live workout to Apple Health as a strength-training
+workout (start, end, duration), so apps that read Health — Bevel, Fitness — count it. Write-only:
+openGym reads nothing back.
+
+- **Turn on:** Settings → During a workout → **Save workouts to Apple Health** (only shown in the
+  native iOS app). The iOS permission sheet appears the first time.
+- **Xcode:** the App target needs the **HealthKit** capability (`ios/App/App/App.entitlements` is
+  already wired in). Use your own bundle ID and team under Signing & Capabilities.
+- **Not covered:** workouts logged into the past (backfill) are not written, and an Apple Watch
+  workout recorded for the same session shows up as a second entry in Health.
+- **Code:** `ios/App/App/HealthPlugin.swift`, `frontend/src/lib/health.js`.
+
 ## App icons & splash screens
 
 `frontend/resources/icon.svg` is the 1024×1024 source (the app's dumbbell glyph on the

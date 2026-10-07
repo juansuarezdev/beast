@@ -1666,4 +1666,7 @@ export default {
   'Teal': 'Türkiz',
   'Yellow': 'Sárga',
   'Enter how long it took — at least 1 minute.': 'Add meg, meddig tartott — legalább 1 perc.',
+  'Save workouts to Apple Health': 'Edzések mentése az Apple Health-be',
+  'Writes each finished workout to Apple Health so apps like Bevel can count it.': 'Minden befejezett edzést az Apple Health-be ír, hogy a Bevelhez hasonló appok beszámítsák.',
+  'Couldn’t reach Apple Health.': 'Az Apple Health nem érhető el.',
 }

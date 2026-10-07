@@ -1008,6 +1008,9 @@ export const PT_BR_OVERRIDES = {
   'Teal': 'Turquesa',
   'Yellow': 'Amarelo',
   'Enter how long it took — at least 1 minute.': 'Informe quanto tempo levou — pelo menos 1 minuto.',
+  'Save workouts to Apple Health': 'Salvar treinos no Apple Saúde',
+  'Writes each finished workout to Apple Health so apps like Bevel can count it.': 'Grava cada treino concluído no Apple Saúde para que apps como o Bevel o contabilizem.',
+  'Couldn’t reach Apple Health.': 'Não foi possível acessar o Apple Saúde.',
 }
 
 export default { ...pt, ...PT_BR_OVERRIDES }

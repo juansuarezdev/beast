@@ -35,6 +35,7 @@ import { normalizeRepRange } from './lib/rep-range.js'
 import { MOBILE, shareExport, printHtml } from './lib/mobile.js'
 import { speedUnitOf, toSpeed, fromSpeed } from './lib/speed.js'
 import { buildCompletedWorkout } from './lib/finish-workout.js'
+import { saveWorkoutToHealth } from './lib/health.js'
 import { isWarmupRow, hasCompletedWork } from './lib/workout-model.js'
 import { saveSessionAsRoutine } from './lib/session-routines.js'
 import { nextUnfinishedUnit } from './lib/supersetFlow.js'
@@ -2682,6 +2683,8 @@ function doFinishWorkout() {
     s.active = null
   })
   useStore.getState().autoBackupNow()
+  // Native iOS only, and only for a session that just ran (a backfilled one has no real clock).
+  if (!past && st.healthSync) saveWorkoutToHealth(w)
   useUI.getState().stopRest()
   beep(snd(), 880, 0.15); beep(snd(), 1100, 0.15, 0.18); beep(snd(), 1320, 0.3, 0.36)
   ui().openSheet(close => <FinishSummary w={shown} prs={prs} e1prs={e1prs} close={close} />, { kind: 'center', locked: true })

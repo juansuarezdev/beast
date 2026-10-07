@@ -1660,4 +1660,7 @@ export default {
   'Teal': 'Бірюзовий',
   'Yellow': 'Жовтий',
   'Enter how long it took — at least 1 minute.': 'Вкажи, скільки це тривало — щонайменше 1 хвилину.',
+  'Save workouts to Apple Health': 'Зберігати тренування в Apple Health',
+  'Writes each finished workout to Apple Health so apps like Bevel can count it.': 'Записує кожне завершене тренування в Apple Health, щоб застосунки на кшталт Bevel його враховували.',
+  'Couldn’t reach Apple Health.': 'Не вдалося підключитися до Apple Health.',
 }

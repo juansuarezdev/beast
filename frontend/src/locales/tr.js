@@ -1663,4 +1663,7 @@ export default {
   'Teal': 'Turkuaz',
   'Yellow': 'Sarı',
   'Enter how long it took — at least 1 minute.': 'Ne kadar sürdüğünü gir — en az 1 dakika.',
+  'Save workouts to Apple Health': 'Antrenmanları Apple Sağlık’a kaydet',
+  'Writes each finished workout to Apple Health so apps like Bevel can count it.': 'Biten her antrenmanı Apple Sağlık’a yazar; Bevel gibi uygulamalar böylece sayabilir.',
+  'Couldn’t reach Apple Health.': 'Apple Sağlık’a ulaşılamadı.',
 }
