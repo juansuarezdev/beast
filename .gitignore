@@ -21,3 +21,6 @@ node_modules
 junit.xml
 coverage/
 frontend/bundle-size.json
+
+# CodeGraph index (local, rebuilt with `codegraph init`)
+.codegraph/
