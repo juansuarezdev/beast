@@ -16,6 +16,7 @@ import { fatigueOf, strengthOf, STRENGTH_FLOOR, LB_TO_KG } from '../lib/recovery
 import { strengthExerciseRowsForMuscle } from '../lib/strength-exercises.js'
 import { fatigueStateOf } from '../lib/recovery-view.js'
 import { e1rmSeries, best1RM } from '../lib/onerm.js'
+import { LEVELS, strengthLevels } from '../lib/strength-level.js'
 import {
   hasEffort, displayScale, scaleName, toScale, avgRir, effortSummary, effortWeeks,
   effortHistogram, isHardSet, HARD_RIR
@@ -287,6 +288,33 @@ function EffortCard({ S }) {
 }
 
 // Stats = the analytics hub: all charts, progress and history live here.
+// How strong you are for your size: the estimated 1RM of the main lifts as a multiple of your body
+// weight, on a rough scale from beginner to beast (lib/strength-level.js). Hidden until there is a
+// weigh-in and a lift to relate it to. An orientation, and it says so.
+function StrengthLevelCard({ S }) {
+  const sl = useMemo(() => strengthLevels(S), [S.workouts, S.bodyweight, S.body])
+  if (!sl) return null
+  const name = key => t(key[0].toUpperCase() + key.slice(1))
+  return <div className="card">
+    <h2 style={{ margin: 0 }}>{t('Strength level')}</h2>
+    <div className="muted small" style={{ marginTop: 4, marginBottom: 10 }}>{t('Estimated from your best sets and your body weight — a rough guide.')}</div>
+    {sl.lifts.map(l => <div key={l.key} style={{ marginBottom: 10 }}>
+      <div className="row between">
+        <span>{exerciseNameFor(EXIDX[({ squat: '0043', bench: '0025', deadlift: '0032', press: '0091', row: '0027' })[l.key]])}</span>
+        <span><b>{name(LEVELS[l.level])}</b> <span className="muted small">{fmtNum(l.e1rm)} {S.unit} · {l.ratio}×</span></span>
+      </div>
+      <div role="progressbar" aria-valuemin={0} aria-valuemax={1} aria-valuenow={l.progress} style={{ height: 6, borderRadius: 3, background: 'rgba(127,127,127,.25)', marginTop: 6, overflow: 'hidden' }}>
+        <div style={{ width: l.progress * 100 + '%', height: '100%', background: 'var(--acc)' }} />
+      </div>
+      {l.next && <div className="muted small" style={{ marginTop: 4 }}>{t('Next: {0} at {1} {2}', name(l.next.level), fmtNum(l.next.w), S.unit)}</div>}
+    </div>)}
+    {sl.total && <div className="row between" style={{ marginTop: 4 }}>
+      <span className="muted">{t('Squat + bench + deadlift')}</span>
+      <b>{fmtNum(sl.total.w)} {S.unit} · {sl.total.ratio}×</b>
+    </div>}
+  </div>
+}
+
 export default function Stats() {
   const nav = useNavigate()
   const S = useStore(s => s.S)
@@ -477,6 +505,7 @@ export default function Stats() {
         <div className="muted small" style={{ marginTop: 4 }}>{t('See which lift is holding back the rest.')}</div></div>
       <Button size="sm" variant="tinted" trailingIcon="chevronRight" style={{ flexShrink: 0 }} onClick={() => nav('/structural-balance')}>{t('Open')}</Button>
     </div>}
+    {workouts.length > 0 && <StrengthLevelCard S={S} />}
     {hasEffort(S) && <EffortCard S={S} />}
 
     <div className="cols">

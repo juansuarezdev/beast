@@ -21,11 +21,11 @@ import { EXIDX, isAssisted, isLoadedEq } from './exercises.js'
 import { isWarmupRow, isSideSet, syncSideAggregate, makeSideSet } from './workout-model.js'
 import { normalizeRepRange } from './rep-range.js'
 
-export const POLICIES = ['off', 'linear', 'greyskull', 'double', 'time']
+export const POLICIES = ['off', 'linear', 'greyskull', 'double', 'rpe', 'time']
 
 // Which policies can sensibly drive which logging mode.
 export const POLICIES_FOR = {
-  reps: ['off', 'linear', 'greyskull', 'double'],
+  reps: ['off', 'linear', 'greyskull', 'double', 'rpe'],
   time: ['off', 'time'],
   cardio: ['off']
 }
@@ -35,6 +35,7 @@ export const POLICY_NAME = {
   linear: 'Linear progression',
   greyskull: 'Greyskull LP',
   double: 'Double progression',
+  rpe: 'RPE-based progression',
   time: 'Add time'
 }
 export const POLICY_DESC = {
@@ -42,13 +43,19 @@ export const POLICY_DESC = {
   linear: 'Hit every rep in every set and the weight goes up. Repeated misses trigger a deload.',
   greyskull: 'Two straight sets plus a final set taken to failure. Beat the target on that set and the weight goes up — double if you double the reps. One failure resets 10 %.',
   double: 'Work up through a rep range at the same weight. Reach the top of the range in every set and the weight goes up, reps back to the bottom.',
+  rpe: 'Aim for a target effort (RPE). Finish every rep with room to spare and the weight goes up; finish them at the limit and it stays.',
   time: 'Hold every set for the full duration and the target goes up.'
 }
 
 // The Epley target is a soft objective mapped onto the exercise's real load grid. Keep the
 // default out of saved configs so plans written before this policy stays byte-for-byte compatible.
 export const DELOAD_FACTOR = 0.9
-export const DELOAD_AFTER = { linear: 3, greyskull: 1, double: 3, time: 3 }
+export const DELOAD_AFTER = { linear: 3, greyskull: 1, double: 3, rpe: 2, time: 3 }
+// The effort an RPE-based exercise aims for when it has not been given one, and how far the last
+// session's effort has to sit from it before the weight moves.
+export const DEFAULT_RPE_TARGET = 8
+export const RPE_BAND = 0.5
+export const RPE_BIG_STEP = 2
 export const DELOAD_FACTOR_MIN = 0.5
 export const DELOAD_FACTOR_MAX = 0.95
 
@@ -284,8 +291,12 @@ export function readSession(entry, fallback) {
   }
   const goal = target.reps || 0
   const reps = sets.map(s => (s.done ? (s.r || 0) : 0))
+  // The effort the lifter rated, as RPE (a RIR of 2 is an RPE of 8), averaged over the sets they
+  // rated. Left out of the read when none was rated, so a session without effort reads as before.
+  const efforts = sets.filter(s => s.done).map(s => (s.rpe != null ? Number(s.rpe) : s.rir != null ? 10 - Number(s.rir) : null)).filter(n => Number.isFinite(n))
   return {
     mode, target, goal, reps,
+    ...(efforts.length ? { rpe: efforts.reduce((a, b) => a + b, 0) / efforts.length } : {}),
     weight: loadOf(entry, sets),
     count: reps.length,                                   // the dimension bodyweight work grows (#33)
     low: reps.length ? Math.min(...reps) : 0,
@@ -526,6 +537,38 @@ export function nextPrescription(S, cfg, routine) {
         ? ['Stalled {0} sessions — hold {1} {2} and use {3} reps.', stalls, candidate.weight, unit, candidate.reps]
         : ['Stalled {0} sessions — Epley deload to {1} {2} for {3} reps.', stalls, candidate.weight, unit, candidate.reps]
     }
+  }
+
+  // RPE-based: the weight follows how hard the last session felt against the effort aimed for. Ease
+  // beyond the band means more weight (two steps when it was very easy), an effort inside it means
+  // the same weight, and harder than aimed means the same weight again until it settles. A missed
+  // rep never adds load, and repeated misses take weight off like the other rules do.
+  if (policy === 'rpe') {
+    const aim = cfg.rpeTarget > 0 ? cfg.rpeTarget : DEFAULT_RPE_TARGET
+    if (!last.ok) {
+      if (stalls >= deloadAt) {
+        const selected = epleyDeload()
+        if (selected) return selected
+        const dw = easier(w)
+        return { policy, kind: 'deload', weight: dw, why: assisted
+          ? ['Missed reps — {0} {1} of help while you build back up.', dw, unit]
+          : ['Missed reps {0} sessions running — reset to {1} {2} and work back up.', stalls, dw, unit] }
+      }
+      return { policy, kind: 'hold', weight: w, why: ['Missed reps last time — same weight again.'] }
+    }
+    if (last.rpe == null) return { policy, kind: 'hold', weight: w, why: ['No effort logged last time — rate your sets and the weight follows.'] }
+    const reserve = aim - last.rpe
+    if (reserve >= RPE_BAND) {
+      const step = reserve >= RPE_BIG_STEP ? inc * 2 : inc
+      return { policy, kind: 'up', weight: harder(w, step),
+        why: assisted
+          ? ['RPE {0} against {1} aimed for — {2} {3} less help.', Math.round(last.rpe * 10) / 10, aim, step, unit]
+          : ['RPE {0} against {1} aimed for — {2} {3} more.', Math.round(last.rpe * 10) / 10, aim, step, unit] }
+    }
+    return { policy, kind: 'hold', weight: w,
+      why: reserve > -RPE_BAND
+        ? ['RPE {0} is on target — same weight again.', Math.round(last.rpe * 10) / 10]
+        : ['RPE {0} was harder than the {1} aimed for — same weight again.', Math.round(last.rpe * 10) / 10, aim] }
   }
 
   if (policy === 'double') {

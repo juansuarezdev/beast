@@ -1762,6 +1762,37 @@ describe('workout controls: the more menu and the set menu', () => {
     expect(mocks.S.active.entries[0].sets.length).toBe(1)
   })
 
+  it('adds back-off sets below a done set of weight and reps, and not for a set not yet done', async () => {
+    await mount([exercise('plain-bench', [true, false])])
+    await act(async () => { container.querySelector('button[aria-label="Set 2"]').dispatchEvent(new dom.Event('click', { bubbles: true })) })
+    expect(item('Add back-off sets')).toBeUndefined()
+
+    await act(async () => { container.querySelector('button[aria-label="Set 1"]').dispatchEvent(new dom.Event('click', { bubbles: true })) })
+    expect(item('Add back-off sets').sub).toBe('3 × 85 %')
+    await act(async () => { item('Add back-off sets').onClick() })
+    const sets = mocks.S.active.entries[0].sets
+    expect(sets).toHaveLength(5)
+    expect(sets.slice(1, 4).map(x => [x.w, x.done])).toEqual([[50, false], [50, false], [50, false]])
+    expect(sets[4]).toMatchObject({ w: 60, done: false })
+  })
+
+  it('shows how a done set moved against the same set last time', async () => {
+    const past = { id: 'p0', d: '2026-09-20', start: 1, end: 2, name: 'Push', entries: [exercise('plain-bench', [true, true])] }
+    await mount([exercise('plain-bench', [true, true, false], { sets: [{ w: 62.5, r: 5, done: true }, { w: 60, r: 6, done: true }, { w: 60, r: 5, done: false }] })], 0, { workouts: [past] })
+    const lines = [...container.querySelectorAll('.setdelta')].map(x => x.textContent.trim())
+    expect(lines).toEqual(['▲ +2.5 kg', '▲ +1 reps'])
+    expect(container.querySelectorAll('.setdelta.up')).toHaveLength(2)
+  })
+
+  it('copies the set before into a set with the same-as-previous item', async () => {
+    await mount([exercise('plain-bench', [true, false])])
+    mocks.S.active.entries[0].sets[0].w = 80
+    mocks.S.active.entries[0].sets[0].r = 3
+    await act(async () => { container.querySelector('button[aria-label="Set 2"]').dispatchEvent(new dom.Event('click', { bubbles: true })) })
+    await act(async () => { item('Same as previous set').onClick() })
+    expect(mocks.S.active.entries[0].sets[1]).toMatchObject({ w: 80, r: 3, done: false })
+  })
+
   it('brings the legacy button rows back per switch', async () => {
     await mount([exercise('plain-bench', [false]), exercise('plain-row', [false])], 0, {
       wc: { setShortcuts: true, pairButtons: true, exerciseButtons: true },

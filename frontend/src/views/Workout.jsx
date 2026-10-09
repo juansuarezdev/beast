@@ -13,6 +13,7 @@ import { fmtNum, fmtPlate, exerciseNameText, fmtDate, todayISO, exCount, DAYN } 
 import { speedUnitOf, toSpeed, fromSpeed } from '../lib/speed.js'
 import { cardioKindFromName, distanceKmOf, distanceStep, distanceUnit, fromKm, paceText, toKm, withDistanceKm, withMinutes } from '../lib/cardio.js'
 import { repUnitOf } from '../lib/functional.js'
+import { backoffRows, BACKOFF_PCT, BACKOFF_SETS } from '../lib/backoff.js'
 import { beep, vibrate, unlock } from '../lib/sound.js'
 import { t, exerciseNameFor, exerciseNameClass } from '../lib/i18n.js'
 import { api, beacon } from '../lib/api.js'
@@ -403,6 +404,13 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
     for (const k of ['w', 'r', 'sec', 'min', 'speed']) if (src[k] != null) out[k] = src[k]
     return out
   })
+  // After a heavy top set: a few more at a lower percentage of its weight, added right below it
+  // (lib/backoff.js). The rows are the ordinary kind, to be ticked and edited like any other.
+  const addBackoff = i => update(s => {
+    const e = s.active.entries[entryIdx]
+    const rows = backoffRows(e.sets[i], { step: weightIncrement(cfg, S.unit) })
+    if (rows) e.sets.splice(i + 1, 0, ...rows)
+  }, true)
   const openSetMenu = (s, i) => {
     const warm = isWarmupRow(s)
     const prevWork = i > 0 && entry.sets.slice(0, i).some(x => isWarmupRow(x) === warm && !isSideSet(x))
@@ -411,6 +419,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
       subtitle: setLabel(entry.id, s, entry.target, speedUnit),
       items: [
         prevWork && !s.done && !isSideSet(s) && { icon: 'clipboard', label: t('Same as previous set'), onClick: () => copyPrevious(i) },
+        !warm && mode === 'reps' && s.done && s.w > 0 && s.r > 0 && !isSideSet(s) && !editing && { icon: 'arrowDown', label: t('Add back-off sets'), sub: BACKOFF_SETS + ' × ' + BACKOFF_PCT + ' %', onClick: () => addBackoff(i) },
         !warm && mode === 'reps' && !isRestPauseSet(s) && { icon: 'arrowDown', label: t('Drop set'), sub: t('+ Drop'), onClick: () => addDropRow(i) },
         !warm && mode === 'reps' && !isDropSet(s) && { icon: 'bolt', label: t('Rest-pause burst'), sub: t('+ Burst'), onClick: () => addBurstRow(i) },
         { icon: 'trash', label: t('Remove this set'), danger: true, disabled: !editing && entry.sets.length <= 1, onClick: () => onRemoveSetAt(i) },

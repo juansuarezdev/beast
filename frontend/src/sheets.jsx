@@ -30,12 +30,13 @@ import { importHevyData, HevyApiError, HEVY_DEV_SETTINGS, mergeHevyRoutines } fr
 import { buildPlanBundle, parsePlan, mergePlan, printPlan, planPrintHTML } from './lib/plan-share.js'
 import { estimate1RM, best1RM, is1RMRecord, REP_CAP } from './lib/onerm.js'
 import { exerciseHistory } from './lib/exercise-history.js'
-import { policyFor, defaultIncrement, POLICIES_FOR, POLICY_NAME, POLICY_DESC, MAX_BW_SETS, weightIncrement } from './lib/progression.js'
+import { policyFor, defaultIncrement, POLICIES_FOR, POLICY_NAME, POLICY_DESC, MAX_BW_SETS, weightIncrement, DEFAULT_RPE_TARGET } from './lib/progression.js'
 import { normalizeRepRange } from './lib/rep-range.js'
 import { MOBILE, shareExport, printHtml } from './lib/mobile.js'
 import { speedUnitOf, toSpeed, fromSpeed } from './lib/speed.js'
 import { buildCompletedWorkout } from './lib/finish-workout.js'
 import { DISTANCE_STEP, repUnitOf } from './lib/functional.js'
+import { percentTable, repRecords } from './lib/records.js'
 import { saveWorkoutToHealth } from './lib/health.js'
 import { isWarmupRow, hasCompletedWork } from './lib/workout-model.js'
 import { saveSessionAsRoutine } from './lib/session-routines.js'
@@ -858,6 +859,10 @@ function ExerciseHistory({ exId }) {
   const onE1 = curve === 'e1rm' && h.e1rmPoints.length > 0
   const unit = h.metric === 'weight' ? st.unit : h.metric === 'reps' ? t('reps') : h.metric === 'sec' ? 's' : t('min')
   const e1Best = useMemo(() => Math.max(0, ...h.e1rmPoints.map(p => p.y)), [h])
+  // The heaviest set for 1, 3, 5, 8 and 10 reps, and what each percentage of the estimated 1RM weighs
+  // on the bar (lib/records.js) — only for a loaded lift, the one thing an estimate can be made of.
+  const records = useMemo(() => (h.metric === 'weight' ? repRecords(st.workouts, exId).filter(Boolean) : []), [st.workouts, exId, h.metric])
+  const percents = useMemo(() => (h.metric === 'weight' && e1Best > 0 ? percentTable(e1Best, weightIncrement({ id: exId }, st.unit)) : []), [h.metric, e1Best, exId, st.unit])
   if (!h.total) return <>
     <h3 className={exerciseNameClass(ex)}>{exerciseNameFor(ex)}</h3>
     <div className="empty"><div className="ico"><Icon name="history" /></div>{t('No sessions logged yet')}</div>
@@ -879,6 +884,28 @@ function ExerciseHistory({ exId }) {
       <Icon name="trophy" style={{ fontSize: 14, color: 'var(--yellow)' }} />
       {t('Best:')} <b className="accent">{fmtNum(onE1 ? e1Best : h.best)} {onE1 ? st.unit : unit}</b>
     </div>
+    {records.length > 0 && <>
+      <h4 className="sec">{t('Rep records')}</h4>
+      <div className="list recs">
+        {records.map(r => <div key={r.reps} className="item">
+          <div className="grow">
+            <div className="tt">{r.reps}RM</div>
+            <div className="ss">{fmtDate(r.d, true)}{r.r > r.reps ? ` · ${fmtNum(r.w)} × ${r.r}` : ''}</div>
+          </div>
+          <b className="accent nocap" style={{ whiteSpace: 'nowrap' }}>{fmtNum(r.w)} {st.unit}</b>
+        </div>)}
+      </div>
+    </>}
+    {percents.length > 0 && <>
+      <h4 className="sec">{t('Percent of your 1RM')}</h4>
+      <div className="small dim" style={{ marginBottom: 6 }}>{t('Est. 1RM')} {fmtNum(e1Best)} {st.unit}</div>
+      <div className="list recs">
+        {percents.map(x => <div key={x.pct} className="item">
+          <div className="grow"><div className="tt">{x.pct} %</div></div>
+          <b className="accent nocap" style={{ whiteSpace: 'nowrap' }}>{fmtNum(x.w)} {st.unit}</b>
+        </div>)}
+      </div>
+    </>}
     <h4 className="sec">{h.sessions.length < h.total ? t('Last {0} sessions', h.sessions.length) : t('Sessions')}</h4>
     <div className="list">
       {h.sessions.map(s => <div key={s.id} className="item" style={{ alignItems: 'flex-start' }}>
@@ -1347,6 +1374,8 @@ function ProgressionFields({ ex, mode, c, setC, routine, unit, perSide }) {
         <Stepper label={t('Reps up to')} value={c.reps ?? range.reps} step={stride} decimal={false}
           onChange={v => setC(x => ({ ...x, reps: v }))} />
       </>}
+      {active === 'rpe' && <Stepper label={t('Target effort (RPE)')} value={c.rpeTarget ?? DEFAULT_RPE_TARGET} step={0.5} min={5} max={10}
+        onChange={v => setC(x => ({ ...x, rpeTarget: v }))} />}
       {epleyEligible && <Stepper label={t('Deload 1RM (%)')} value={deloadPercent} step={5} min={50} max={95} decimal={false}
         onChange={v => setC(x => ({ ...x, deloadFactor: Number(v) / 100 }))} />}
     </div>}
@@ -1404,6 +1433,8 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
     const prog = {}
     if (c.prog) prog.prog = c.prog
     if (c.inc > 0) prog.inc = c.inc
+    // The effort an RPE-based exercise aims for; the default is left out so the plan keeps its shape.
+    if (mode === 'reps' && activePolicy === 'rpe' && c.rpeTarget > 0 && c.rpeTarget !== DEFAULT_RPE_TARGET) prog.rpeTarget = c.rpeTarget
     // Epley deloading is configurable per occurrence, but the default stays omitted so older
     // plans retain their compact shape and keep the existing 90% behaviour.
     if (mode === 'reps' && !bw && (activePolicy === 'linear' || activePolicy === 'double')) {

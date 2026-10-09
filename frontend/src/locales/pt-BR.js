@@ -1017,6 +1017,18 @@ export const PT_BR_OVERRIDES = {
   'Distance instead of reps': 'Distância em vez de repetições',
   'You log metres, not reps.': 'Você registra metros, não repetições.',
   'For farmers walks, sled pushes and carries.': 'Para farmer’s walks, empurrões de trenó e transportes.',
+  'Intermediate': 'Intermediário',
+  'Percent of your 1RM': 'Porcentagem do seu 1RM',
+  'Estimated from your best sets and your body weight — a rough guide.': 'Estimado a partir das suas melhores séries e do seu peso corporal — um guia aproximado.',
+  'Next: {0} at {1} {2}': 'Próximo: {0} com {1} {2}',
+  'Aim for a target effort (RPE). Finish every rep with room to spare and the weight goes up; finish them at the limit and it stays.': 'Mire um esforço-alvo (RPE). Termine todas as repetições com margem e o peso sobe; termine-as no limite e ele fica igual.',
+  'Missed reps last time — same weight again.': 'Você falhou repetições da última vez — mesmo peso de novo.',
+  'No effort logged last time — rate your sets and the weight follows.': 'Nenhum esforço registrado da última vez — avalie suas séries e o peso se ajusta.',
+  'RPE {0} against {1} aimed for — {2} {3} more.': 'RPE {0} contra {1} previsto — {2} {3} a mais.',
+  'RPE {0} against {1} aimed for — {2} {3} less help.': 'RPE {0} contra {1} previsto — {2} {3} a menos de ajuda.',
+  'RPE {0} is on target — same weight again.': 'RPE {0} na meta — mesmo peso de novo.',
+  'RPE {0} was harder than the {1} aimed for — same weight again.': 'RPE {0} foi mais difícil que o {1} previsto — mesmo peso de novo.',
+  'Target effort (RPE)': 'Esforço-alvo (RPE)',
 }
 
 export default { ...pt, ...PT_BR_OVERRIDES }

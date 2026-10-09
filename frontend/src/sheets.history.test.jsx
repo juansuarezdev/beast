@@ -59,7 +59,7 @@ describe('exercise history sheet', () => {
     ] } }))
     exerciseHistorySheet(EX)
     const host = renderTop()
-    const rows = [...host.querySelectorAll('.list .item')]
+    const rows = [...host.querySelectorAll('.list:not(.recs) .item')]
     expect(rows).toHaveLength(3)
     // newest first, oldest last; the warm-up and the unfinished set never show up
     expect(rows[0].querySelector('.ss').textContent).toBe('70×3')
@@ -86,6 +86,36 @@ describe('exercise history sheet', () => {
     act(() => { btn.click() })
     expect(useUI.getState().sheets).toHaveLength(2)
     const top = renderTop()
-    expect(top.querySelectorAll('.list .item')).toHaveLength(1)
+    expect(top.querySelectorAll('.list:not(.recs) .item')).toHaveLength(1)
+  })
+})
+
+describe('exercise history sheet — records and percentages', () => {
+  const BENCH = '0025'
+  const bench = (i, rows) => ({ ...session(i, rows), entries: [{ id: BENCH, target: { mode: 'reps', bodyweight: false }, sets: rows }] })
+
+  it('shows the heaviest weight for each number of reps and the percentages of the estimated 1RM', () => {
+    useStore.setState(s => ({ S: { ...s.S, unit: 'kg', workouts: [
+      bench(0, [{ w: 100, r: 5, done: true }]),
+      bench(7, [{ w: 120, r: 1, done: true }]),
+    ] } }))
+    exerciseHistorySheet(BENCH)
+    const host = renderTop()
+    const [records, percents] = [...host.querySelectorAll('.list.recs')]
+    expect([...records.querySelectorAll('.item .tt')].map(x => x.textContent)).toEqual(['1RM', '3RM', '5RM'])
+    expect([...records.querySelectorAll('.item b')].map(x => x.textContent)).toEqual(['120 kg', '100 kg', '100 kg'])
+    // the best estimate is the single of 120, so the table starts there
+    expect(percents.querySelector('.item .tt').textContent).toBe('100 %')
+    expect(percents.querySelector('.item b').textContent).toBe('120 kg')
+    expect(percents.querySelectorAll('.item')).toHaveLength(10)
+  })
+
+  it('has neither for an exercise that is not a loaded lift', () => {
+    useStore.setState(s => ({ S: { ...s.S, unit: 'kg', workouts: [
+      { ...session(0, [{ sec: 45, w: 0, done: true }]), entries: [{ id: EX, target: { mode: 'time' }, sets: [{ sec: 45, w: 0, done: true }] }] },
+    ] } }))
+    exerciseHistorySheet(EX)
+    const host = renderTop()
+    expect(host.querySelectorAll('.list.recs')).toHaveLength(0)
   })
 })
