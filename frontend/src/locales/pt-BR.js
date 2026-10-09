@@ -1031,6 +1031,14 @@ export const PT_BR_OVERRIDES = {
   'Target effort (RPE)': 'Esforço-alvo (RPE)',
   'The first set is the heavy one and decides progression; the rest follow it at a lower weight.': 'A primeira série é a pesada e decide a progressão; as demais a seguem com menos peso.',
   'Back-off reps from': 'Repetições do back-off a partir de',
+  'Shown on the home screen, with how far along each one is.': 'Mostrados na tela inicial, com o andamento de cada um.',
+  'Sessions this week': 'Sessões esta semana',
+  'Sessions per week': 'Sessões por semana',
+  'Add a lift goal': 'Adicionar um objetivo de carga',
+  'Lift goals': 'Objetivos de carga',
+  'Goal time (min)': 'Tempo-alvo (min)',
+  'A time goal reads your best run of at least that distance, scaled to it.': 'Um objetivo de tempo usa sua melhor corrida de pelo menos essa distância, escalada para ela.',
+  'Pick an exercise': 'Escolha um exercício',
 }
 
 export default { ...pt, ...PT_BR_OVERRIDES }

@@ -663,6 +663,52 @@ function GoalSheet({ close }) {
 }
 export const goalSheet = () => ui().openSheet(close => <GoalSheet close={close} />)
 
+// Every goal the Home card tracks (lib/goals.js), set in one place: sessions and cardio minutes a week, a
+// lift's estimated 1RM, a time for a distance, and the body weight target (its own sheet).
+function GoalsSheet() {
+  const st = useStore(s => s.S)
+  const update = useStore(s => s.update)
+  const nameOf = id => exerciseNameFor(EXIDX[id] || { n: t('Unknown exercise') })
+  const edit = (key, id, patch) => update(s => { s[key] = (s[key] || []).map(g => (g.id === id ? { ...g, ...patch } : g)) })
+  const remove = (key, id) => update(s => { s[key] = (s[key] || []).filter(g => g.id !== id) })
+  const addLift = () => {
+    const picker = exercisePicker(ex => {
+      picker.close()
+      const est = best1RM(S(), ex.id)
+      const target = est ? Math.ceil((est.est * 1.1) / 2.5) * 2.5 : 60
+      update(s => { s.liftGoals = [...(s.liftGoals || []), { id: uid(), exId: ex.id, target }] })
+    }, { title: t('Pick an exercise') })
+  }
+  return <>
+    <h3>{t('Goals')}</h3>
+    <div className="muted small" style={{ marginBottom: 12 }}>{t('Shown on the home screen, with how far along each one is.')}</div>
+    <div className="row cfgrow" style={{ marginBottom: 8, flexWrap: 'wrap' }}>
+      <Stepper label={t('Sessions per week')} value={st.sessionsGoal || 0} step={1} min={0} max={7} decimal={false}
+        onChange={v => update(s => { s.sessionsGoal = Math.round(v) || 0 })} />
+      <Stepper label={t('Weekly cardio goal')} value={st.cardioGoalMin || 0} step={15} min={0} max={600} decimal={false} unit="min"
+        onChange={v => update(s => { s.cardioGoalMin = Math.round(v) || 0 })} />
+    </div>
+    <Button icon="scale" onClick={() => goalSheet()}>{st.targetW ? t('Target weight') + ': ' + fmtNum(st.targetW) + ' ' + st.unit : t('Target weight')}</Button>
+
+    <h4 className="sec">{t('Lift goals')}</h4>
+    {(st.liftGoals || []).map(g => <div key={g.id} className="row cfgrow" style={{ marginBottom: 8, alignItems: 'flex-end' }}>
+      <Stepper label={nameOf(g.exId) + ' · ' + t('Est. 1RM')} value={g.target} step={2.5} min={1} unit={st.unit} onChange={v => edit('liftGoals', g.id, { target: v })} />
+      <button className="iconbtn" aria-label={t('Remove goal')} onClick={() => remove('liftGoals', g.id)}><Icon name="trash" /></button>
+    </div>)}
+    <Button size="sm" icon="plus" onClick={addLift}>{t('Add a lift goal')}</Button>
+
+    <h4 className="sec">{t('Time goals')}</h4>
+    {(st.timeGoals || []).map(g => <div key={g.id} className="row cfgrow" style={{ marginBottom: 8, alignItems: 'flex-end', flexWrap: 'wrap' }}>
+      <Stepper label={t('Distance ({0})', 'km')} value={g.km} step={0.5} min={0.5} onChange={v => edit('timeGoals', g.id, { km: v })} />
+      <Stepper label={t('Goal time (min)')} value={g.minutes} step={1} min={1} onChange={v => edit('timeGoals', g.id, { minutes: v })} />
+      <button className="iconbtn" aria-label={t('Remove goal')} onClick={() => remove('timeGoals', g.id)}><Icon name="trash" /></button>
+    </div>)}
+    <Button size="sm" icon="plus" onClick={() => update(s => { s.timeGoals = [...(s.timeGoals || []), { id: uid(), km: 5, minutes: 30 }] })}>{t('Add a time goal')}</Button>
+    <div className="muted small" style={{ marginTop: 8 }}>{t('A time goal reads your best run of at least that distance, scaled to it.')}</div>
+  </>
+}
+export const goalsSheet = () => ui().openSheet(close => <GoalsSheet close={close} />)
+
 /* ============================ plate loading ============================ */
 // One editor for every place an exercise's loading shows up (exercise detail, exercise config,
 // mid-workout sheet). Three things, all per exercise and display-only (lib/plates.js):

@@ -2,12 +2,11 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import { effectiveRoutines, effectiveRoutineIds, nextTrainingDay, streakWeeks, lastBW, setsDoneActive } from '../lib/history.js'
-import { cardioWeek, goalShare } from '../lib/cardio-week.js'
+import { clockOfMinutes, goalsProgress } from '../lib/goals.js'
 import { EXIDX } from '../lib/exercises.js'
-import { speedUnitOf } from '../lib/speed.js'
 import { fmtNum, fmtDate, todayISO, isoOf, weekKey, weekStartOf, weekDayOffset, DAYS, DAYN } from '../lib/format.js'
-import { t, dateLocale } from '../lib/i18n.js'
-import { bwSheet, goalSheet, dayOverrideSheet, calendarSheet, startFlow, starterPlanSheet, bwDeltaColor, weighInsSheet } from '../sheets.jsx'
+import { t, dateLocale, exerciseNameFor } from '../lib/i18n.js'
+import { goalsSheet, bwSheet, goalSheet, dayOverrideSheet, calendarSheet, startFlow, starterPlanSheet, bwDeltaColor, weighInsSheet } from '../sheets.jsx'
 import LineChart from '../components/LineChart.jsx'
 import Icon from '../components/Icon.jsx'
 import { Button } from '../components/ui.jsx'
@@ -59,6 +58,7 @@ export default function Home() {
   const wkLabel = weekOffset === 0 ? t('This week') : `${wkStart.getDate()} ${wkStart.toLocaleDateString(dateLocale(), { month: 'short' })} – ${wkEnd.getDate()} ${wkEnd.toLocaleDateString(dateLocale(), { month: 'short' })}`
 
   const wThisWeek = S.workouts.filter(w => weekKey(w.d, ws) === weekKey(todayISO(), ws)).length
+  const goals = goalsProgress(S, todayISO(), ws, id => EXIDX[id]?.n || '')
   // Days scheduled, not routines — a combined day counts as 1, matching wThisWeek (one w).
   const plannedPerWeek = Object.values(S.week).filter(ids => ids?.length).length
   const bwPoints = S.bodyweight.slice(-30).map(b => ({ t: b.t || new Date(b.d).getTime(), y: b.w, d: b.d }))
@@ -145,22 +145,34 @@ export default function Home() {
       </div>
     )}
 
-    {S.cardioGoalMin > 0 && (() => {
-      // Minutes of ticked cardio this week against the goal set in Settings (lib/cardio-week.js).
-      const cw = cardioWeek(S.workouts, todayISO(), ws, id => EXIDX[id]?.n || '')
-      const miles = speedUnitOf(S) === 'mph'
-      return <div className="card">
-        <div className="row between">
-          <h2 style={{ margin: 0 }}>{t('Cardio this week')}</h2>
-          <span className="muted small">{t('{0} of {1} min', fmtNum(Math.round(cw.minutes)), S.cardioGoalMin)}</span>
-        </div>
-        <div role="progressbar" aria-valuemin={0} aria-valuemax={S.cardioGoalMin} aria-valuenow={Math.round(cw.minutes)}
-          style={{ height: 8, borderRadius: 4, background: 'rgba(127,127,127,.25)', marginTop: 10, overflow: 'hidden' }}>
-          <div style={{ width: goalShare(cw.minutes, S.cardioGoalMin) * 100 + '%', height: '100%', background: 'var(--acc)' }} />
-        </div>
-        {cw.km > 0 && <div className="muted small" style={{ marginTop: 8 }}>{fmtNum(miles ? cw.km / 1.609344 : cw.km)} {miles ? 'mi' : 'km'}</div>}
+    {goals.length > 0 && <div className="card">
+      <div className="row between">
+        <h2 style={{ margin: 0 }}>{t('Goals')}</h2>
+        <Button size="sm" icon="target" onClick={goalsSheet}>{t('Edit goals')}</Button>
       </div>
-    })()}
+      {goals.map(g => {
+        const title = g.kind === 'weight' ? t('Body weight')
+          : g.kind === 'sessions' ? t('Sessions this week')
+            : g.kind === 'cardio' ? t('Cardio this week')
+              : g.kind === 'lift' ? exerciseNameFor(EXIDX[g.exId] || { n: t('Unknown exercise') }) + ' · ' + t('Est. 1RM')
+                : fmtNum(g.km) + ' km'
+        const text = g.kind === 'weight' ? fmtNum(g.current) + ' → ' + fmtNum(g.target) + ' ' + S.unit
+          : g.kind === 'sessions' ? g.current + ' / ' + g.target
+            : g.kind === 'cardio' ? t('{0} of {1} min', fmtNum(g.current), g.target)
+              : g.kind === 'lift' ? (g.current ? fmtNum(g.current) : '—') + ' → ' + fmtNum(g.target) + ' ' + S.unit
+                : (g.current == null ? '—' : clockOfMinutes(g.current)) + ' → ' + clockOfMinutes(g.target)
+        return <div key={g.key} style={{ marginTop: 12 }}>
+          <div className="row between" style={{ gap: 8 }}>
+            <span style={{ minWidth: 0 }}>{title}</span>
+            <span className="muted small" style={{ whiteSpace: 'nowrap' }}>{text}{g.done ? ' ✓' : ''}</span>
+          </div>
+          <div role="progressbar" aria-valuemin={0} aria-valuemax={1} aria-valuenow={g.share}
+            style={{ height: 8, borderRadius: 4, background: 'rgba(127,127,127,.25)', marginTop: 6, overflow: 'hidden' }}>
+            <div style={{ width: g.share * 100 + '%', height: '100%', background: g.done ? 'var(--green)' : 'var(--acc)' }} />
+          </div>
+        </div>
+      })}
+    </div>}
 
     {S.showWeightCard !== false && <div className="card">
       <div className="row between bw-head" style={{ marginBottom: 6 }}>

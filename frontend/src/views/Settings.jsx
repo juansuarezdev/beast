@@ -25,7 +25,7 @@ import { limitsFrom, fmtMB, MB } from '../lib/media-limits.js'
 import { setRestAccent } from '../lib/rest-alert.js'
 import { checkForUpdate, downloadAndInstall } from '../lib/update.js'
 import { forgetCoach } from '../lib/coach-api.js'
-import { starterPlanSheet, confirmSheet, importFromApp, importFromHevy, equipmentProfileSheet, plateInventorySheet, menuSheet } from '../sheets.jsx'
+import { goalsSheet, starterPlanSheet, confirmSheet, importFromApp, importFromHevy, equipmentProfileSheet, plateInventorySheet, menuSheet } from '../sheets.jsx'
 import Icon from '../components/Icon.jsx'
 import { ServerSyncSection, KeptChangesRows, leaveServer, connectServer, passkeySignIn } from '../components/ServerSync.jsx'
 import { passwordOn, PasswordRow, openPasswordSignIn, openPasswordRegister } from '../components/PasswordAuth.jsx'
@@ -434,6 +434,8 @@ export default function Settings() {
         <Switch checked={!!S.smartRest} onChange={v => update(s => { s.smartRest = v })} />
       </Row>
       {/* A weekly target for cardio minutes; the Home screen shows the week against it. */}
+      {/* Every goal the Home screen shows, in one sheet: sessions, cardio, lifts, times, body weight. */}
+      <Row icon="target" iconTint="var(--yellow)" title={t('Goals')} onClick={goalsSheet} />
       <SelectRow icon="bike" iconTint="var(--blue)" title={t('Weekly cardio goal')}
         value={String(S.cardioGoalMin || 0)} onChange={v => update(s => { s.cardioGoalMin = parseInt(v, 10) || 0 })}
         options={[0, 60, 90, 120, 150, 180, 240, 300].map(m => ({ value: String(m), label: m ? m + ' min' : t('Off') }))} />

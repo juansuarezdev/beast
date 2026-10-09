@@ -94,6 +94,12 @@ export const DEF = {
   smartRest: false,
   // Weekly cardio goal in minutes; 0 is off (the Home card and Settings, lib/cardio-week.js).
   cardioGoalMin: 0,
+  // Goals the Home card tracks besides body weight and the cardio minutes above (lib/goals.js): sessions a
+  // week (0 is off), lift goals [{ id, exId, target }] on the estimated 1RM, and times for a distance
+  // [{ id, km, minutes }].
+  sessionsGoal: 0,
+  liftGoals: [],
+  timeGoals: [],
   // Native iOS app only: write each finished live session to Apple Health as a strength workout.
   healthSync: false,
   // Which controls the workout screen shows besides the sets themselves. The default is the

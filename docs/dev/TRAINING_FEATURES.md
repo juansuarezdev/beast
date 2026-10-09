@@ -74,6 +74,16 @@ top set's weight, rep range up to 15). Applies to loaded rep work with two or mo
   "Top set + back-off" with the percentage and the rep range. The set menu's "Add back-off sets"
   stays as the manual way to add them after a set.
 
+## Goals on Home
+
+`lib/goals.js`. The Home card lists every goal the profile has (Settings → Goals, or the card's own
+button): **body weight** toward its target (from the first weigh-in), **sessions this week** against
+`S.sessionsGoal`, **cardio minutes this week** against `S.cardioGoalMin`, **lift goals**
+`S.liftGoals [{ id, exId, target }]` against the estimated 1RM, and **time goals**
+`S.timeGoals [{ id, km, minutes }]` against the fastest time a run of at least that distance implies
+(its minutes scaled to the distance at the pace it was run — a 6 km run in 33 min says 27:30 for
+5 km). Only goals that are set show; the card is absent with none.
+
 ## Not done
 
 Training blocks with a planned deload week, EMOM / AMRAP / Tabata timers, structured intervals, a

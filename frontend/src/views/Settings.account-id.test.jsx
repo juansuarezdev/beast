@@ -43,7 +43,7 @@ vi.mock('../lib/mobile.js', () => ({
   isAndroid: () => Promise.resolve(false), shareExport: vi.fn(), syncReminder: vi.fn(),
 }))
 vi.mock('./MobileOnboarding.jsx', () => ({ ConnectSheet: () => null }))
-vi.mock('../sheets.jsx', () => ({
+vi.mock('../sheets.jsx', () => ({ goalsSheet: vi.fn(),
   starterPlanSheet: vi.fn(), confirmSheet: vi.fn(), importFromApp: vi.fn(),
   importFromHevy: vi.fn(), equipmentProfileSheet: vi.fn(), menuSheet: vi.fn(), askAddDeviceData: vi.fn(),
 }))
