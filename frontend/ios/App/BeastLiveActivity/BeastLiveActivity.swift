@@ -43,6 +43,31 @@ private struct RestClock: View {
     }
 }
 
+/// The button that ticks the next set. Shown while a next set exists and no rest is running (or
+/// the rest has run out); iOS 17 and later, where a Live Activity can hold a button.
+private struct DoneButton: View {
+    let state: BeastActivityAttributes.ContentState
+    let isStale: Bool
+
+    private var showing: Bool {
+        guard state.hasQueue else { return false }
+        if state.restState != "running" { return true }
+        return isStale || state.restEndsAt <= Date()
+    }
+
+    var body: some View {
+        if showing {
+            Button(intent: CompleteSetIntent()) {
+                Label(state.doneLabel, systemImage: "checkmark")
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(accent)
+        }
+    }
+}
+
 private struct LockScreenView: View {
     let workoutName: String
     let state: BeastActivityAttributes.ContentState
@@ -66,6 +91,7 @@ private struct LockScreenView: View {
                 }
                 .tint(accent)
             }
+            DoneButton(state: state, isStale: isStale)
         }
         .padding(16)
     }
@@ -89,7 +115,10 @@ struct BeastLiveActivity: Widget {
                     Text(context.state.title).font(.headline).foregroundStyle(primaryText).lineLimit(1)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    Text(context.state.detail).font(.subheadline).foregroundStyle(secondaryText).lineLimit(1)
+                    VStack(spacing: 8) {
+                        Text(context.state.detail).font(.subheadline).foregroundStyle(secondaryText).lineLimit(1)
+                        DoneButton(state: context.state, isStale: context.isStale)
+                    }
                 }
             } compactLeading: {
                 Image(systemName: "dumbbell.fill").foregroundStyle(accent)

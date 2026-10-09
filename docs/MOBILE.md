@@ -178,6 +178,14 @@ the rest down. It starts with the workout and ends when the workout is finished 
   the background. The next-set text only changes while the app runs, when a set is ticked.
 - **Needs** iOS 16.2+ and Settings → Beast → Live Activities on (the default). A Dynamic Island is
   an iPhone 14 Pro or later; other iPhones get the lock-screen card.
+- **Tick a set from the lock screen** (iOS 17+): while a next plain set (reps and weight filled in,
+  not a superset, hold, drop or per-side row) is up, the card has a **Done** button. It ticks that
+  set, starts the rest it earns and shows the set after it, even with the app asleep. The button is
+  a `LiveActivityIntent` that runs in the app's process and keeps the queue of sets and the ticks in
+  UserDefaults (`ios/App/Shared/BeastLiveStore.swift`); the web side takes the ticks back when the
+  app is alive again (foreground, a push, or the plugin's `pending` event) and applies them to the
+  saved session. Sets that need the app (timed, drop, per-side) end the queue, so nothing is
+  ticked out of order.
 - **Xcode:** the `BeastLiveActivity` widget extension has its own bundle ID (the app's plus
   `.LiveActivity`); automatic signing creates it. It counts as one more App ID on a free account.
 - **Code:** `ios/App/BeastLiveActivity/` (the widget), `ios/App/Shared/BeastActivityAttributes.swift`

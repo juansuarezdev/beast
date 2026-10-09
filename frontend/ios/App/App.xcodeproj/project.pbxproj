@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0BE3CE631B6A4180D9BF3DA8 /* BeastLiveStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F01C87B72BFDB7F6260F525 /* BeastLiveStore.swift */; };
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
 		50379B232058CBB4000EE86E /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 50379B222058CBB4000EE86E /* capacitor.config.json */; };
 		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
@@ -18,6 +19,7 @@
 		6E0905D4BD5C5AB62CF5A8AE /* BeastActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2114137CFB0D1C72DDBB1F6A /* BeastActivityAttributes.swift */; };
 		730B6C5817EEC9A12B8972E0 /* LiveActivityPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = F00F32BF7DF8AC104701A0FB /* LiveActivityPlugin.m */; };
 		9CBBADD779EE0D900DB6D1C5 /* BeastLiveActivity.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = BEAAD856C9D1BC585224435E /* BeastLiveActivity.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		9DDA5782A145E6305640C910 /* CompleteSetIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E0D032FC680E75D0A7E8F34 /* CompleteSetIntent.swift */; };
 		A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
 		A1D4C771834476C894AC6DB7 /* BeastLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4124CC1E2DBCD92F0AE7C46E /* BeastLiveActivity.swift */; };
 		AA0000000000000000000002 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000001 /* SceneDelegate.swift */; };
@@ -28,6 +30,8 @@
 		AA0100000000000000000016 /* BeastViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000017 /* BeastViewController.swift */; };
 		AB45FE8108978012535C4168 /* BeastLiveActivityBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672150B62AD8EBE95684B242 /* BeastLiveActivityBundle.swift */; };
 		BDDE5442B8831D898FCE313D /* LiveActivityPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEC1699D5A0D457914B00544 /* LiveActivityPlugin.swift */; };
+		D0CCF14D537D077473974F50 /* BeastLiveStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F01C87B72BFDB7F6260F525 /* BeastLiveStore.swift */; };
+		D5054745AF59D0836A8C18D3 /* CompleteSetIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E0D032FC680E75D0A7E8F34 /* CompleteSetIntent.swift */; };
 		F6FBAD113509096CF082B13B /* BeastActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2114137CFB0D1C72DDBB1F6A /* BeastActivityAttributes.swift */; };
 /* End PBXBuildFile section */
 
@@ -69,6 +73,8 @@
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
 		672150B62AD8EBE95684B242 /* BeastLiveActivityBundle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BeastLiveActivityBundle.swift; sourceTree = "<group>"; };
+		6E0D032FC680E75D0A7E8F34 /* CompleteSetIntent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CompleteSetIntent.swift; sourceTree = "<group>"; };
+		6F01C87B72BFDB7F6260F525 /* BeastLiveStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BeastLiveStore.swift; sourceTree = "<group>"; };
 		7792EC32D75A533496DD303F /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA0000000000000000000001 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		AA0100000000000000000001 /* PrintPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintPlugin.swift; sourceTree = "<group>"; };
@@ -118,6 +124,8 @@
 			isa = PBXGroup;
 			children = (
 				2114137CFB0D1C72DDBB1F6A /* BeastActivityAttributes.swift */,
+				6F01C87B72BFDB7F6260F525 /* BeastLiveStore.swift */,
+				6E0D032FC680E75D0A7E8F34 /* CompleteSetIntent.swift */,
 			);
 			name = Shared;
 			path = Shared;
@@ -339,6 +347,8 @@
 				AB45FE8108978012535C4168 /* BeastLiveActivityBundle.swift in Sources */,
 				A1D4C771834476C894AC6DB7 /* BeastLiveActivity.swift in Sources */,
 				F6FBAD113509096CF082B13B /* BeastActivityAttributes.swift in Sources */,
+				D0CCF14D537D077473974F50 /* BeastLiveStore.swift in Sources */,
+				D5054745AF59D0836A8C18D3 /* CompleteSetIntent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -356,6 +366,8 @@
 				6E0905D4BD5C5AB62CF5A8AE /* BeastActivityAttributes.swift in Sources */,
 				BDDE5442B8831D898FCE313D /* LiveActivityPlugin.swift in Sources */,
 				730B6C5817EEC9A12B8972E0 /* LiveActivityPlugin.m in Sources */,
+				0BE3CE631B6A4180D9BF3DA8 /* BeastLiveStore.swift in Sources */,
+				9DDA5782A145E6305640C910 /* CompleteSetIntent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -549,7 +561,7 @@
 				DEVELOPMENT_TEAM = NB9HJKM38D;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BeastLiveActivity/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.juansuarez.beast.app.LiveActivity;
@@ -571,7 +583,7 @@
 				DEVELOPMENT_TEAM = NB9HJKM38D;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BeastLiveActivity/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.juansuarez.beast.app.LiveActivity;

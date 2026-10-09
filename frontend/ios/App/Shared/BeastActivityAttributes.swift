@@ -13,6 +13,8 @@ struct BeastActivityAttributes: ActivityAttributes {
         var detail: String         // "Set 3/4 · 60 kg × 8"
         var restLabel: String
         var readyLabel: String
+        var doneLabel: String      // text of the lock-screen button
+        var hasQueue: Bool         // a next set the button can tick
         var restState: String      // "none" | "running" | "paused" | "ready"
         var restStartedAt: Date
         var restEndsAt: Date

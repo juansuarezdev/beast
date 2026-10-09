@@ -4,5 +4,6 @@
 // Bridges the Swift LiveActivityPlugin into Capacitor's Objective-C plugin registry.
 CAP_PLUGIN(LiveActivityPlugin, "LiveActivity",
            CAP_PLUGIN_METHOD(sync, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(drain, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(end, CAPPluginReturnPromise);
 )
