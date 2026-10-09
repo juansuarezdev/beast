@@ -43,27 +43,69 @@ private struct RestClock: View {
     }
 }
 
-/// The button that ticks the next set. Shown while a next set exists and no rest is running (or
-/// the rest has run out); iOS 17 and later, where a Live Activity can hold a button.
-private struct DoneButton: View {
+private func plain(_ v: Double) -> String {
+    v.rounded() == v ? String(Int(v)) : String(format: "%g", v)
+}
+
+/// A number of the next set with its − and + buttons: weight, reps, seconds, minutes or speed,
+/// whichever this kind of exercise has. The buttons run in the app's process (AdjustSetIntent).
+private struct FieldStepper: View {
+    let slot: Int
+    let field: BeastField
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Button(intent: AdjustSetIntent(slot: slot, direction: -1)) {
+                Image(systemName: "minus.circle.fill").font(.title2)
+            }
+            .buttonStyle(.plain)
+            Text(plain(field.v) + (field.u.isEmpty ? "" : " " + field.u))
+                .font(.subheadline.weight(.semibold))
+                .monospacedDigit()
+                .foregroundStyle(primaryText)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .frame(minWidth: 56)
+            Button(intent: AdjustSetIntent(slot: slot, direction: 1)) {
+                Image(systemName: "plus.circle.fill").font(.title2)
+            }
+            .buttonStyle(.plain)
+        }
+        .foregroundStyle(accent)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+/// What the lock screen lets the lifter do to the next set: nudge its numbers, then tick it. Shown
+/// while a next set exists and no rest is running (or the rest has run out). iOS 17 and later,
+/// where a Live Activity can hold buttons.
+private struct SetControls: View {
     let state: BeastActivityAttributes.ContentState
     let isStale: Bool
 
-    private var showing: Bool {
+    static func showing(_ state: BeastActivityAttributes.ContentState, isStale: Bool) -> Bool {
         guard state.hasQueue else { return false }
         if state.restState != "running" { return true }
         return isStale || state.restEndsAt <= Date()
     }
 
     var body: some View {
-        if showing {
-            Button(intent: CompleteSetIntent()) {
-                Label(state.doneLabel, systemImage: "checkmark")
-                    .font(.subheadline.weight(.semibold))
-                    .frame(maxWidth: .infinity)
+        if Self.showing(state, isStale: isStale) {
+            VStack(spacing: 8) {
+                HStack(spacing: 8) {
+                    ForEach(Array(state.fields.enumerated()), id: \.offset) { slot, field in
+                        FieldStepper(slot: slot, field: field)
+                    }
+                }
+                Button(intent: CompleteSetIntent()) {
+                    Label(state.doneLabel, systemImage: "checkmark")
+                        .font(.subheadline.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+                .tint(accent)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(accent)
         }
     }
 }
@@ -73,16 +115,21 @@ private struct LockScreenView: View {
     let state: BeastActivityAttributes.ContentState
     let isStale: Bool
 
+    private var controls: Bool { SetControls.showing(state, isStale: isStale) }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             HStack {
                 Image(systemName: "dumbbell.fill").foregroundStyle(accent)
-                Text(workoutName).font(.caption).foregroundStyle(secondaryText).lineLimit(1)
+                Text(controls && !state.setLabel.isEmpty ? workoutName + " · " + state.setLabel : workoutName)
+                    .font(.caption).foregroundStyle(secondaryText).lineLimit(1)
                 Spacer()
                 RestClock(state: state, isStale: isStale).font(.title2.weight(.semibold))
             }
             Text(state.title).font(.headline).foregroundStyle(primaryText).lineLimit(1)
-            Text(state.detail).font(.subheadline).foregroundStyle(secondaryText).lineLimit(1)
+            if !controls {
+                Text(state.detail).font(.subheadline).foregroundStyle(secondaryText).lineLimit(1)
+            }
             if state.restState == "running", !isStale, state.restStartedAt < state.restEndsAt, state.restEndsAt > Date() {
                 ProgressView(timerInterval: state.restStartedAt...state.restEndsAt, countsDown: true) {
                     EmptyView()
@@ -91,9 +138,9 @@ private struct LockScreenView: View {
                 }
                 .tint(accent)
             }
-            DoneButton(state: state, isStale: isStale)
+            SetControls(state: state, isStale: isStale)
         }
-        .padding(16)
+        .padding(14)
     }
 }
 
@@ -116,8 +163,10 @@ struct BeastLiveActivity: Widget {
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     VStack(spacing: 8) {
-                        Text(context.state.detail).font(.subheadline).foregroundStyle(secondaryText).lineLimit(1)
-                        DoneButton(state: context.state, isStale: context.isStale)
+                        if !SetControls.showing(context.state, isStale: context.isStale) {
+                            Text(context.state.detail).font(.subheadline).foregroundStyle(secondaryText).lineLimit(1)
+                        }
+                        SetControls(state: context.state, isStale: context.isStale)
                     }
                 }
             } compactLeading: {

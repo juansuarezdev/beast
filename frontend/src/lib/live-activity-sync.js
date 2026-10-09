@@ -14,6 +14,7 @@ import { EXIDX } from './exercises.js'
 import { exerciseNameText } from './format.js'
 import { completeSetFromLock, liveActivityState } from './live-activity.js'
 import { supersetUnits, unitOf } from './history.js'
+import { speedUnitOf } from './speed.js'
 import { restSecFor, warmupRestSecFor } from './supersetFlow.js'
 import { useUI } from '../store/useUI.js'
 
@@ -53,8 +54,9 @@ export function initLiveActivitySync({ getS, update, subscribe }) {
     const active = getS().active
     if (!active || String(active.id) !== sessionId) return true
     let applied = null
+    const speedUnit = speedUnitOf(getS())
     update(S => {
-      for (const a of actions) if (completeSetFromLock(S, a.e, a.s)) applied = a
+      for (const a of actions) if (completeSetFromLock(S, a.e, a.s, { side: a.side, fields: a.fields, speedUnit })) applied = a
     })
     if (!applied) return true
     // The rest it started is already counting on the lock screen; carry on from what is left.
@@ -70,6 +72,7 @@ export function initLiveActivitySync({ getS, update, subscribe }) {
     const S = getS()
     const state = liveActivityState(S.active, useUI.getState().timer, {
       unit: S.unit === 'lb' ? 'lb' : 'kg',
+      speedUnit: speedUnitOf(S),
       nameOf,
       restFor: S.active ? restFor(S, S.active) : undefined,
       labels: { rest: t('Rest'), ready: t('Ready'), done: t('Done'), finish: t('Finish workout') },

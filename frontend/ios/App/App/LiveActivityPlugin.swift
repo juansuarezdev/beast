@@ -7,9 +7,9 @@ import ActivityKit
  * Usage from JS (lib/live-activity-sync.js):
  *   const Live = registerPlugin('LiveActivity');
  *   await Live.sync({ workoutName, title, detail, restLabel, readyLabel, doneLabel, finishLabel,
- *                     sessionId, queue: [{ e, s, title, detail, rest }],
+ *                     sessionId, queue: [{ e, s, side, title, setLabel, detail, rest, fields }],
  *                     restState, restStartedAt, restEndsAt, pausedLeft });   // times: epoch ms
- *   await Live.drain();   // -> { sessionId, actions: [{ e, s, at, rest }] } ticked on the lock screen
+ *   await Live.drain();   // -> { sessionId, actions: [{ e, s, side, at, rest, fields: [{ k, v }] }] }
  *   await Live.end();
  * Fires a 'pending' event when the lock-screen button ticked a set while the app was alive.
  */
@@ -27,7 +27,12 @@ public class LiveActivityPlugin: CAPPlugin {
         let result = BeastLiveStore.drain()
         call.resolve([
             "sessionId": result.sessionId,
-            "actions": result.actions.map { ["e": $0.e, "s": $0.s, "at": $0.at, "rest": $0.rest] },
+            "actions": result.actions.map { a in
+                [
+                    "e": a.e, "s": a.s, "side": a.side, "at": a.at, "rest": a.rest,
+                    "fields": a.fields.map { ["k": $0.k, "v": $0.v] },
+                ] as [String: Any]
+            },
         ])
     }
 
@@ -43,6 +48,8 @@ public class LiveActivityPlugin: CAPPlugin {
             readyLabel: call.getString("readyLabel") ?? "",
             doneLabel: call.getString("doneLabel") ?? "",
             hasQueue: false,
+            setLabel: "",
+            fields: [],
             restState: call.getString("restState") ?? "none",
             restStartedAt: date("restStartedAt"),
             restEndsAt: date("restEndsAt"),
@@ -51,12 +58,21 @@ public class LiveActivityPlugin: CAPPlugin {
         let workoutName = call.getString("workoutName") ?? ""
         // The button's queue, kept where the button's intent can reach it with the app asleep.
         if #available(iOS 17.0, *) {
+            let number = { (raw: Any?) -> Double? in (raw as? NSNumber)?.doubleValue }
             let items: [BeastLiveStore.Item] = (call.getArray("queue") ?? []).compactMap { raw in
                 guard let d = raw as? [String: Any],
-                      let e = d["e"] as? Int, let s = d["s"] as? Int,
+                      let e = number(d["e"]), let s = number(d["s"]),
                       let title = d["title"] as? String, let detail = d["detail"] as? String
                 else { return nil }
-                return BeastLiveStore.Item(e: e, s: s, title: title, detail: detail, rest: (d["rest"] as? Int) ?? 0)
+                let fields: [BeastField] = (d["fields"] as? [[String: Any]] ?? []).compactMap { f in
+                    guard let k = f["k"] as? String, let v = number(f["v"]), let step = number(f["step"]) else { return nil }
+                    return BeastField(k: k, v: v, step: step, u: f["u"] as? String ?? "")
+                }
+                return BeastLiveStore.Item(
+                    e: Int(e), s: Int(s), side: d["side"] as? String ?? "",
+                    title: title, setLabel: d["setLabel"] as? String ?? detail, detail: detail,
+                    rest: Int(number(d["rest"]) ?? 0), fields: fields
+                )
             }
             BeastLiveStore.replace(
                 meta: BeastLiveStore.Meta(
@@ -67,6 +83,10 @@ public class LiveActivityPlugin: CAPPlugin {
                 queue: items
             )
             state.hasQueue = !items.isEmpty
+            if let head = items.first {
+                state.setLabel = head.setLabel
+                state.fields = head.fields
+            }
         }
         // Once a running rest passes its end the system marks the activity stale, which the
         // widget reads as "ready for the next set" even though the app is asleep.

@@ -178,14 +178,19 @@ the rest down. It starts with the workout and ends when the workout is finished 
   the background. The next-set text only changes while the app runs, when a set is ticked.
 - **Needs** iOS 16.2+ and Settings → Beast → Live Activities on (the default). A Dynamic Island is
   an iPhone 14 Pro or later; other iPhones get the lock-screen card.
-- **Tick a set from the lock screen** (iOS 17+): while a next plain set (reps and weight filled in,
-  not a superset, hold, drop or per-side row) is up, the card has a **Done** button. It ticks that
-  set, starts the rest it earns and shows the set after it, even with the app asleep. The button is
-  a `LiveActivityIntent` that runs in the app's process and keeps the queue of sets and the ticks in
-  UserDefaults (`ios/App/Shared/BeastLiveStore.swift`); the web side takes the ticks back when the
-  app is alive again (foreground, a push, or the plugin's `pending` event) and applies them to the
-  saved session. Sets that need the app (timed, drop, per-side) end the queue, so nothing is
-  ticked out of order.
+- **Adjust and tick a set from the lock screen** (iOS 17+): while a next set the card can handle is
+  up, it shows that set's numbers with − and + buttons and a **Done** button. The numbers depend on
+  the kind of exercise, with the same steps as the workout screen: weight and reps for a loaded
+  lift (reps alone for a bodyweight one, weight too once it carries added load), seconds — and
+  weight if loaded — for a hold, minutes and speed for cardio, and each side of a per-side set on
+  its own (left, then right). **Done** ticks the set with those numbers, starts the rest it earns
+  and shows the set after it, even with the app asleep. A weight changed this way carries to the
+  later sets of the exercise, as typing it in the app does. Drop sets, rest-pause, superset members
+  and rows missing their numbers stop the queue — they need the app, and ticking past them would
+  skip them. The buttons are `LiveActivityIntent`s that run in the app's process and keep the queue
+  and the ticks in UserDefaults (`ios/App/Shared/BeastLiveStore.swift`); the web side takes the
+  ticks back when the app is alive again (foreground, a push, or the plugin's `pending` event) and
+  applies them to the saved session.
 - **Xcode:** the `BeastLiveActivity` widget extension has its own bundle ID (the app's plus
   `.LiveActivity`); automatic signing creates it. It counts as one more App ID on a free account.
 - **Code:** `ios/App/BeastLiveActivity/` (the widget), `ios/App/Shared/BeastActivityAttributes.swift`

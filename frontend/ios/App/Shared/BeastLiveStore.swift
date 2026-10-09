@@ -17,15 +17,20 @@ enum BeastLiveStore {
     struct Item: Codable {
         var e: Int
         var s: Int
+        var side: String        // "", "L" or "R"
         var title: String
+        var setLabel: String
         var detail: String
         var rest: Int
+        var fields: [BeastField]
     }
     struct Done: Codable {
         var e: Int
         var s: Int
-        var at: Double   // epoch ms
+        var side: String
+        var at: Double          // epoch ms
         var rest: Int
+        var fields: [BeastField] // the numbers settled on when it was ticked
     }
     struct Meta: Codable {
         var sessionId: String
@@ -86,16 +91,20 @@ enum BeastLiveStore {
         let item = rest.removeFirst()
         queue = rest
         let now = Date()
-        pending = pending + [Done(e: item.e, s: item.s, at: now.timeIntervalSince1970 * 1000, rest: item.rest)]
+        pending = pending + [Done(e: item.e, s: item.s, side: item.side, at: now.timeIntervalSince1970 * 1000, rest: item.rest, fields: item.fields)]
 
         if let activity = Activity<BeastActivityAttributes>.activities.first {
             var state = activity.content.state
             if let next = rest.first {
                 state.title = next.title
                 state.detail = next.detail
+                state.setLabel = next.setLabel
+                state.fields = next.fields
             } else {
                 state.title = meta.workoutName
                 state.detail = meta.finishLabel
+                state.setLabel = ""
+                state.fields = []
             }
             state.hasQueue = !rest.isEmpty
             var stale: Date? = nil
@@ -110,5 +119,28 @@ enum BeastLiveStore {
             await activity.update(ActivityContent(state: state, staleDate: stale))
         }
         NotificationCenter.default.post(name: .beastLiveActionsPending, object: nil)
+    }
+
+    /// The − and + buttons: nudge one number of the next set. A weight carries to the later sets of
+    /// the same exercise that still had the old one, the way typing it in the app would.
+    static func adjust(slot: Int, direction: Int) async {
+        var all = queue
+        guard !all.isEmpty, all[0].fields.indices.contains(slot) else { return }
+        let old = all[0].fields[slot]
+        let moved = max(0, ((old.v + Double(direction) * old.step) * 100).rounded() / 100)
+        all[0].fields[slot].v = moved
+        if old.k == "w" {
+            for i in all.indices.dropFirst() where all[i].e == all[0].e && all[i].side == all[0].side {
+                if let j = all[i].fields.firstIndex(where: { $0.k == "w" }), all[i].fields[j].v == old.v {
+                    all[i].fields[j].v = moved
+                }
+            }
+        }
+        queue = all
+        if let activity = Activity<BeastActivityAttributes>.activities.first {
+            var state = activity.content.state
+            state.fields = all[0].fields
+            await activity.update(ActivityContent(state: state, staleDate: activity.content.staleDate))
+        }
     }
 }

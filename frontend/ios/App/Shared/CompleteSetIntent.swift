@@ -16,3 +16,30 @@ struct CompleteSetIntent: LiveActivityIntent {
         return .result()
     }
 }
+
+/// The − and + buttons under the next set: nudge one of its numbers (weight and reps, seconds,
+/// minutes and speed, depending on the exercise) before ticking it. `slot` is which number,
+/// `direction` is -1 or +1. Same process and storage as CompleteSetIntent.
+@available(iOS 17.0, *)
+struct AdjustSetIntent: LiveActivityIntent {
+    static var title: LocalizedStringResource = "Adjust set"
+    static var openAppWhenRun: Bool = false
+    static var authenticationPolicy: IntentAuthenticationPolicy { .alwaysAllowed }
+
+    @Parameter(title: "Number")
+    var slot: Int
+
+    @Parameter(title: "Direction")
+    var direction: Int
+
+    init() {}
+    init(slot: Int, direction: Int) {
+        self.slot = slot
+        self.direction = direction
+    }
+
+    func perform() async throws -> some IntentResult {
+        await BeastLiveStore.adjust(slot: slot, direction: direction)
+        return .result()
+    }
+}
