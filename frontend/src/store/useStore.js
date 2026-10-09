@@ -86,6 +86,9 @@ export const DEF = {
   // 'cards' behaviour. beginWorkout copies the value onto s.active, so the header ⋮ menu can
   // override it for the running session without touching this saved default.
   workoutView: 'cards',
+  // Rest between sets follows how hard the set was: longer after heavy low-rep sets and failure,
+  // shorter after light high-rep ones (lib/set-compare.js). Off until switched on.
+  smartRest: false,
   // Native iOS app only: write each finished live session to Apple Health as a strength workout.
   healthSync: false,
   // Which controls the workout screen shows besides the sets themselves. The default is the

@@ -1011,6 +1011,7 @@ export const PT_BR_OVERRIDES = {
   'Save workouts to Apple Health': 'Salvar treinos no Apple Saúde',
   'Writes each finished workout to Apple Health so apps like Bevel can count it.': 'Grava cada treino concluído no Apple Saúde para que apps como o Bevel o contabilizem.',
   'Couldn’t reach Apple Health.': 'Não foi possível acessar o Apple Saúde.',
+  'Longer rest after heavy low-rep sets and sets to failure, shorter after light high-rep ones. An exercise with its own rest time keeps it.': 'Mais descanso após séries pesadas de poucas repetições e séries até a falha, menos após séries leves de muitas. Um exercício com seu próprio descanso o mantém.',
 }
 
 export default { ...pt, ...PT_BR_OVERRIDES }

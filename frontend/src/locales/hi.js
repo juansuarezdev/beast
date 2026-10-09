@@ -1666,4 +1666,7 @@ export default {
   'Save workouts to Apple Health': 'वर्कआउट Apple Health में सहेजें',
   'Writes each finished workout to Apple Health so apps like Bevel can count it.': 'हर पूरा वर्कआउट Apple Health में लिखता है ताकि Bevel जैसे ऐप उसे गिन सकें।',
   'Couldn’t reach Apple Health.': 'Apple Health तक नहीं पहुँच सके।',
+  'Smart rest': 'Smart rest',
+  'Longer rest after heavy low-rep sets and sets to failure, shorter after light high-rep ones. An exercise with its own rest time keeps it.': 'Longer rest after heavy low-rep sets and sets to failure, shorter after light high-rep ones. An exercise with its own rest time keeps it.',
+  'Same as previous set': 'Same as previous set',
 }

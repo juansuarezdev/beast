@@ -1669,4 +1669,7 @@ export default {
   'Save workouts to Apple Health': 'Edzések mentése az Apple Health-be',
   'Writes each finished workout to Apple Health so apps like Bevel can count it.': 'Minden befejezett edzést az Apple Health-be ír, hogy a Bevelhez hasonló appok beszámítsák.',
   'Couldn’t reach Apple Health.': 'Az Apple Health nem érhető el.',
+  'Smart rest': 'Smart rest',
+  'Longer rest after heavy low-rep sets and sets to failure, shorter after light high-rep ones. An exercise with its own rest time keeps it.': 'Longer rest after heavy low-rep sets and sets to failure, shorter after light high-rep ones. An exercise with its own rest time keeps it.',
+  'Same as previous set': 'Same as previous set',
 }

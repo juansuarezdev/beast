@@ -1746,10 +1746,13 @@ describe('workout controls: the more menu and the set menu', () => {
     expect(mocks.exerciseHistorySheet).toHaveBeenCalledWith('plain-row')
   })
 
-  it('opens a per-set menu from the set number with drop, burst and remove', async () => {
+  it('opens a per-set menu from the set number with same-as-previous, drop, burst and remove', async () => {
     await mount([exercise('plain-bench', [false, false])])
-    await act(async () => { container.querySelector('button[aria-label="Set 2"]').dispatchEvent(new dom.Event('click', { bubbles: true })) })
+    // The first set has no set before it to copy
+    await act(async () => { container.querySelector('button[aria-label="Set 1"]').dispatchEvent(new dom.Event('click', { bubbles: true })) })
     expect(lastMenu().items.filter(Boolean).map(it => it.label)).toEqual(['Drop set', 'Rest-pause burst', 'Remove this set'])
+    await act(async () => { container.querySelector('button[aria-label="Set 2"]').dispatchEvent(new dom.Event('click', { bubbles: true })) })
+    expect(lastMenu().items.filter(Boolean).map(it => it.label)).toEqual(['Same as previous set', 'Drop set', 'Rest-pause burst', 'Remove this set'])
 
     await act(async () => { item('Drop set').onClick() })
     expect(mocks.S.active.entries[0].sets[1].drops?.length).toBe(1)

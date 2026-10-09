@@ -427,6 +427,12 @@ export default function Settings() {
           update(s => { s.healthSync = v })
         }} />
       </Row>}
+      {/* Rest follows how hard the set was (lib/set-compare.js smartRestSec). An exercise with its own
+          rest time, a warm-up, a hold and cardio keep what they were given. */}
+      <Row icon="timer" iconTint="var(--orange)" title={t('Smart rest')}
+        subtitle={t('Longer rest after heavy low-rep sets and sets to failure, shorter after light high-rep ones. An exercise with its own rest time keeps it.')}>
+        <Switch checked={!!S.smartRest} onChange={v => update(s => { s.smartRest = v })} />
+      </Row>
       {/* Whose reps a planned session opens with (lib/session-start.js). The plan's by default:
           the routine is what you said you would do, and history and progression decide the
           weight. The other choice is the old behaviour, reps carried over from last time.

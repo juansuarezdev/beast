@@ -1677,4 +1677,7 @@ export default {
   'Save workouts to Apple Health': 'บันทึกการออกกำลังกายลง Apple Health',
   'Writes each finished workout to Apple Health so apps like Bevel can count it.': 'เขียนการออกกำลังกายที่เสร็จแล้วลง Apple Health เพื่อให้แอปอย่าง Bevel นับได้',
   'Couldn’t reach Apple Health.': 'เข้าถึง Apple Health ไม่ได้',
+  'Smart rest': 'Smart rest',
+  'Longer rest after heavy low-rep sets and sets to failure, shorter after light high-rep ones. An exercise with its own rest time keeps it.': 'Longer rest after heavy low-rep sets and sets to failure, shorter after light high-rep ones. An exercise with its own rest time keeps it.',
+  'Same as previous set': 'Same as previous set',
 }

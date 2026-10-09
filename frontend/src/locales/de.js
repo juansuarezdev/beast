@@ -1686,4 +1686,7 @@ export default {
   'Save workouts to Apple Health': 'Workouts in Apple Health speichern',
   'Writes each finished workout to Apple Health so apps like Bevel can count it.': 'Schreibt jedes beendete Workout in Apple Health, damit Apps wie Bevel es zählen können.',
   'Couldn’t reach Apple Health.': 'Apple Health war nicht erreichbar.',
+  'Smart rest': 'Smarte Pause',
+  'Longer rest after heavy low-rep sets and sets to failure, shorter after light high-rep ones. An exercise with its own rest time keeps it.': 'Längere Pause nach schweren Sätzen mit wenigen Wiederholungen und Sätzen bis zum Versagen, kürzere nach leichten mit vielen. Eine Übung mit eigener Pausenzeit behält sie.',
+  'Same as previous set': 'Wie der vorherige Satz',
 }

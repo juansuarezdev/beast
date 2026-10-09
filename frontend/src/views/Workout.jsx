@@ -4,9 +4,10 @@ import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import { workoutControls } from '../lib/workout-controls.js'
 import { useUI } from '../store/useUI.js'
-import { exOr, betterWeight } from '../lib/exercises.js'
+import { exOr, betterWeight, beatsWeight } from '../lib/exercises.js'
 import { usesBar } from '../lib/bar.js'
 import { loadKindFor, baseWeightFor, inventoryFor, rowLoad, sameLoad, plateDelta, dropGrid } from '../lib/plates.js'
+import { compareSetTo, smartRestForSet } from '../lib/set-compare.js'
 import { effectiveRoutines, effectiveRoutineIds, lastEntryFor, bestWeightFor, bestWeightForEntry, buildSets, freestyleConfig, defaultConfig, setsDoneActive, setUnitsTotal, supersetUnits, unitOf, setLabel, modeOf, isBw, isPerSide, repStep, EFFORT, effortOf, stepEffort, capEffort, cascadeWeight, insertWarmupRow, removeRowAt, pairAdjacent, unpairSuperset, cleanupSg, applyIntensifierPlan, pinnedNoteFor, exNoteFor, setsRepsOf } from '../lib/history.js'
 import { fmtNum, fmtPlate, exerciseNameText, fmtDate, todayISO, exCount, DAYN } from '../lib/format.js'
 import { speedUnitOf, toSpeed, fromSpeed } from '../lib/speed.js'
@@ -339,6 +340,17 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
       {moves.length > 0 && <span className="moves">{moves.join(' ')}</span>}
     </div>
   }
+  // A logged set held against the same set of the reference line (last time, or the best set): a
+  // lifter reads "+2.5 kg" the moment the tick lands, not in the history afterwards. Per-side rows
+  // and warm-ups are not compared — there is no one number to hold them against.
+  const refWork = ref ? (refBest ? [ref.set] : ref.sets.filter(x => !isWarmupRow(x))) : []
+  const deltaLine = (s, i) => {
+    if (dense || editing || !s.done || isWarmupRow(s) || isSideSet(s) || !refWork.length) return null
+    const k = entry.sets.slice(0, i + 1).filter(x => !isWarmupRow(x)).length - 1
+    const against = refBest ? refWork[0] : (refWork[k] || refWork[refWork.length - 1])
+    const d = compareSetTo(against, s, mode, { unit: S.unit, speedUnit })
+    return d ? <div className={'setdelta ' + d.dir}>{d.dir === 'up' ? '▲ ' : d.dir === 'down' ? '▼ ' : ''}{d.text}</div> : null
+  }
   // Everything about this exercise that is not a set you are logging right now lives behind one
   // button. What used to be a row of buttons in the header, a chip under the bar, a strip of
   // three under the sets and four more below the card is a single list you open once a session.
@@ -363,12 +375,26 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   })
   // The set number is the set's own menu: drop / burst / remove — three things that used to
   // sit as chips and an X on every single row.
+  // Copy the numbers of the set before this one (same phase) into this row — the quickest way to
+  // log a straight run of identical sets, and what "same weight again" means on the lock screen.
+  const copyPrevious = i => mutSet(i, row => {
+    const warm = isWarmupRow(row)
+    let p = i - 1
+    while (p >= 0 && (isWarmupRow(entry.sets[p]) !== warm || isSideSet(entry.sets[p]))) p--
+    if (p < 0) return row
+    const src = entry.sets[p]
+    const out = { ...row }
+    for (const k of ['w', 'r', 'sec', 'min', 'speed']) if (src[k] != null) out[k] = src[k]
+    return out
+  })
   const openSetMenu = (s, i) => {
     const warm = isWarmupRow(s)
+    const prevWork = i > 0 && entry.sets.slice(0, i).some(x => isWarmupRow(x) === warm && !isSideSet(x))
     menuSheet({
       title: (warm ? t('Warm-up') : t('Set {0}', entry.sets.slice(0, i + 1).filter(x => isWarmupRow(x) === warm).length)),
       subtitle: setLabel(entry.id, s, entry.target, speedUnit),
       items: [
+        prevWork && !s.done && !isSideSet(s) && { icon: 'clipboard', label: t('Same as previous set'), onClick: () => copyPrevious(i) },
         !warm && mode === 'reps' && !isRestPauseSet(s) && { icon: 'arrowDown', label: t('Drop set'), sub: t('+ Drop'), onClick: () => addDropRow(i) },
         !warm && mode === 'reps' && !isDropSet(s) && { icon: 'bolt', label: t('Rest-pause burst'), sub: t('+ Burst'), onClick: () => addBurstRow(i) },
         { icon: 'trash', label: t('Remove this set'), danger: true, disabled: !editing && entry.sets.length <= 1, onClick: () => onRemoveSetAt(i) },
@@ -589,6 +615,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
           </div>
           )}
           {loadLine(String(i))}
+          {deltaLine(s, i)}
           {/* Drop-sets and rest-pause bursts extend this same row — no long rest, no new set.
               A planned exercise arrives with these already filled in (applyIntensifierPlan);
               every value here is just as editable as the main row's own weight/reps. */}
@@ -700,6 +727,8 @@ function ActiveWorkout() {
     }
   }
   const progressHighWater = useRef(A.entries.map(e => e.sets.filter(s => s.done).length))
+  // Which weights of which exercise already flashed a record this session.
+  const prSeen = useRef(new Set())
   // The marks are index-keyed, and removing an exercise shifts every index above it down
   // (removeActiveExercise splices). Re-baseline whenever the list length changes, otherwise a
   // shifted exercise inherits its predecessor's mark and its real progress reads as a re-check.
@@ -1106,6 +1135,18 @@ function ActiveWorkout() {
     // prevents an uncheck/re-check of finished work from replaying the flow side effects.
     const fresh = useStore.getState().S.active
     if (fresh && checked && fresh.entries[idx]) {
+      // A set heavier than anything in the history flashes as a record right when it is ticked,
+      // once per weight per exercise — the finish screen still has the full list.
+      const doneRow = fresh.entries[idx].sets[i]
+      if (m === 'reps' && !isWarmupRow(doneRow) && !isSideSet(doneRow) && doneRow.w > 0) {
+        const prior = bestWeightFor(sessionHistory(S), fresh.entries[idx].id)
+        const key = fresh.entries[idx].id + ':' + doneRow.w
+        if (prior > 0 && beatsWeight(fresh.entries[idx].id, doneRow.w, prior) && !prSeen.current.has(key)) {
+          prSeen.current.add(key)
+          useUI.getState().toast(t('New PR:') + ' ' + doneRow.w + ' ' + S.unit)
+          vibrate([30, 60, 30])
+        }
+      }
       const progress = setProgressHighWater(fresh.entries[idx], progressHighWater.current[idx] || 0)
       progressHighWater.current[idx] = progress.highWater
 
@@ -1123,7 +1164,9 @@ function ActiveWorkout() {
       const restSec = restSecFor(fresh.entries, freshUnit || [idx], S.restSec)
       // A warm-up ramp set may rest shorter than a work set (the exercise's warmupRestSec); the
       // last ramp set, into the first work set, still gets the working rest.
-      const restAfter = warmupRestSecFor(fresh.entries[idx], i, restSec)
+      // Heavy low-rep sets rest longer and light high-rep ones shorter, unless the exercise has its
+      // own rest or the profile turned Smart rest off (lib/set-compare.js).
+      const restAfter = smartRestForSet(S, fresh.entries[idx], fresh.entries[idx].sets[i], warmupRestSecFor(fresh.entries[idx], i, restSec))
 
       // A re-check of finished work must not navigate or reopen a sheet, but it may still owe
       // you a rest — see restOnRecheck, and the other half of issue #3. A rest that already ran

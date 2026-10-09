@@ -16,6 +16,7 @@ import { completeSetFromLock, liveActivityState } from './live-activity.js'
 import { supersetUnits, unitOf } from './history.js'
 import { speedUnitOf } from './speed.js'
 import { restSecFor, warmupRestSecFor } from './supersetFlow.js'
+import { smartRestForSet } from './set-compare.js'
 import { useUI } from '../store/useUI.js'
 
 // The plugin goes back inside an object, never bare: a Capacitor plugin answers to every property
@@ -32,7 +33,8 @@ const nameOf = id => (EXIDX[id] ? exerciseNameText(EXIDX[id]) : t('Unknown exerc
 // The rest a set earns, as the workout screen works it out when the set is ticked there.
 const restFor = (S, active) => {
   const units = supersetUnits(active.entries)
-  return (e, s) => warmupRestSecFor(active.entries[e], s, restSecFor(active.entries, unitOf(units, e), S.restSec))
+  return (e, s) => smartRestForSet(S, active.entries[e], active.entries[e].sets[s],
+    warmupRestSecFor(active.entries[e], s, restSecFor(active.entries, unitOf(units, e), S.restSec)))
 }
 
 let started = false
