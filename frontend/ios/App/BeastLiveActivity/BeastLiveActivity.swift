@@ -3,6 +3,10 @@ import SwiftUI
 import WidgetKit
 
 private let accent = Color(red: 1.0, green: 0.27, blue: 0.23)
+// The card has its own dark background, so its text is fixed instead of following the phone's
+// light or dark mode (which left black text on black).
+private let primaryText = Color.white
+private let secondaryText = Color.white.opacity(0.7)
 
 private func clock(_ seconds: Int) -> String {
     String(format: "%d:%02d", max(0, seconds) / 60, max(0, seconds) % 60)
@@ -23,12 +27,14 @@ private struct RestClock: View {
             } else {
                 Text(timerInterval: state.restStartedAt...state.restEndsAt, countsDown: true)
                     .monospacedDigit()
+                    .foregroundStyle(primaryText)
             }
         case "paused":
             HStack(spacing: 4) {
                 Image(systemName: "pause.fill").font(.caption)
                 Text(clock(state.pausedLeft)).monospacedDigit()
             }
+            .foregroundStyle(primaryText)
         case "ready":
             Text(state.readyLabel).foregroundStyle(accent)
         default:
@@ -46,12 +52,12 @@ private struct LockScreenView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Image(systemName: "dumbbell.fill").foregroundStyle(accent)
-                Text(workoutName).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                Text(workoutName).font(.caption).foregroundStyle(secondaryText).lineLimit(1)
                 Spacer()
                 RestClock(state: state, isStale: isStale).font(.title2.weight(.semibold))
             }
-            Text(state.title).font(.headline).lineLimit(1)
-            Text(state.detail).font(.subheadline).foregroundStyle(.secondary).lineLimit(1)
+            Text(state.title).font(.headline).foregroundStyle(primaryText).lineLimit(1)
+            Text(state.detail).font(.subheadline).foregroundStyle(secondaryText).lineLimit(1)
             if state.restState == "running", !isStale, state.restStartedAt < state.restEndsAt, state.restEndsAt > Date() {
                 ProgressView(timerInterval: state.restStartedAt...state.restEndsAt, countsDown: true) {
                     EmptyView()
@@ -69,7 +75,7 @@ struct BeastLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: BeastActivityAttributes.self) { context in
             LockScreenView(workoutName: context.attributes.workoutName, state: context.state, isStale: context.isStale)
-                .activityBackgroundTint(Color.black.opacity(0.85))
+                .activityBackgroundTint(Color(red: 0.09, green: 0.09, blue: 0.10))
                 .activitySystemActionForegroundColor(.white)
         } dynamicIsland: { context in
             DynamicIsland {
@@ -80,10 +86,10 @@ struct BeastLiveActivity: Widget {
                     RestClock(state: context.state, isStale: context.isStale).font(.title3.weight(.semibold))
                 }
                 DynamicIslandExpandedRegion(.center) {
-                    Text(context.state.title).font(.headline).lineLimit(1)
+                    Text(context.state.title).font(.headline).foregroundStyle(primaryText).lineLimit(1)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    Text(context.state.detail).font(.subheadline).foregroundStyle(.secondary).lineLimit(1)
+                    Text(context.state.detail).font(.subheadline).foregroundStyle(secondaryText).lineLimit(1)
                 }
             } compactLeading: {
                 Image(systemName: "dumbbell.fill").foregroundStyle(accent)
