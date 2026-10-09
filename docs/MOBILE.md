@@ -168,6 +168,22 @@ Beast reads nothing back.
   workout recorded for the same session shows up as a second entry in Health.
 - **Code:** `ios/App/App/HealthPlugin.swift`, `frontend/src/lib/health.js`.
 
+## Live Activity (iOS)
+
+While a workout is running, the native iOS app shows a Live Activity: on the lock screen and in the
+Dynamic Island it names the next set (`Bench Press — Set 3/4 · 60 kg × 8`) and, during a rest, counts
+the rest down. It starts with the workout and ends when the workout is finished or discarded.
+
+- **The countdown** is drawn by iOS from an absolute end time, so it keeps ticking with the app in
+  the background. The next-set text only changes while the app runs, when a set is ticked.
+- **Needs** iOS 16.2+ and Settings → Beast → Live Activities on (the default). A Dynamic Island is
+  an iPhone 14 Pro or later; other iPhones get the lock-screen card.
+- **Xcode:** the `BeastLiveActivity` widget extension has its own bundle ID (the app's plus
+  `.LiveActivity`); automatic signing creates it. It counts as one more App ID on a free account.
+- **Code:** `ios/App/BeastLiveActivity/` (the widget), `ios/App/Shared/BeastActivityAttributes.swift`
+  (shared by app and widget), `ios/App/App/LiveActivityPlugin.swift`,
+  `frontend/src/lib/live-activity.js` (what it shows, tested) and `live-activity-sync.js` (the bridge).
+
 ## App icons & splash screens
 
 `frontend/resources/icon.svg` is the 1024×1024 source (the app's dumbbell glyph on the

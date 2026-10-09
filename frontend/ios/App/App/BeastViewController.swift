@@ -9,5 +9,6 @@ import Capacitor
 class BeastViewController: CAPBridgeViewController {
     override open func capacitorDidLoad() {
         bridge?.registerPluginInstance(HealthPlugin())
+        bridge?.registerPluginInstance(LiveActivityPlugin())
     }
 }

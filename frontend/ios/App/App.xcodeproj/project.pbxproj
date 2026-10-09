@@ -14,17 +14,52 @@
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
+		66C7FB441CFCBEAD936E7DC3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26C3C6D4AB29A2265C9021DE /* Foundation.framework */; };
+		6E0905D4BD5C5AB62CF5A8AE /* BeastActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2114137CFB0D1C72DDBB1F6A /* BeastActivityAttributes.swift */; };
+		730B6C5817EEC9A12B8972E0 /* LiveActivityPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = F00F32BF7DF8AC104701A0FB /* LiveActivityPlugin.m */; };
+		9CBBADD779EE0D900DB6D1C5 /* BeastLiveActivity.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = BEAAD856C9D1BC585224435E /* BeastLiveActivity.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
+		A1D4C771834476C894AC6DB7 /* BeastLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4124CC1E2DBCD92F0AE7C46E /* BeastLiveActivity.swift */; };
 		AA0000000000000000000002 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000001 /* SceneDelegate.swift */; };
 		AA0100000000000000000002 /* PrintPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000001 /* PrintPlugin.swift */; };
 		AA0100000000000000000004 /* PrintPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000003 /* PrintPlugin.m */; };
 		AA0100000000000000000012 /* HealthPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000011 /* HealthPlugin.swift */; };
 		AA0100000000000000000014 /* HealthPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000013 /* HealthPlugin.m */; };
 		AA0100000000000000000016 /* BeastViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000017 /* BeastViewController.swift */; };
+		AB45FE8108978012535C4168 /* BeastLiveActivityBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672150B62AD8EBE95684B242 /* BeastLiveActivityBundle.swift */; };
+		BDDE5442B8831D898FCE313D /* LiveActivityPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEC1699D5A0D457914B00544 /* LiveActivityPlugin.swift */; };
+		F6FBAD113509096CF082B13B /* BeastActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2114137CFB0D1C72DDBB1F6A /* BeastActivityAttributes.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		377577775A4CA96656D9D9E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 504EC2FC1FED79650016851F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3C1D4D14E55DE23119BBB626;
+			remoteInfo = BeastLiveActivity;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4A884960BE297528DDD362FF /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				9CBBADD779EE0D900DB6D1C5 /* BeastLiveActivity.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		2114137CFB0D1C72DDBB1F6A /* BeastActivityAttributes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BeastActivityAttributes.swift; sourceTree = "<group>"; };
+		26C3C6D4AB29A2265C9021DE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
+		4124CC1E2DBCD92F0AE7C46E /* BeastLiveActivity.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BeastLiveActivity.swift; sourceTree = "<group>"; };
 		50379B222058CBB4000EE86E /* capacitor.config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = capacitor.config.json; sourceTree = "<group>"; };
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		504EC3071FED79650016851F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -33,16 +68,21 @@
 		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
+		672150B62AD8EBE95684B242 /* BeastLiveActivityBundle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BeastLiveActivityBundle.swift; sourceTree = "<group>"; };
+		7792EC32D75A533496DD303F /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA0000000000000000000001 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		AA0100000000000000000001 /* PrintPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintPlugin.swift; sourceTree = "<group>"; };
 		AA0100000000000000000003 /* PrintPlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PrintPlugin.m; sourceTree = "<group>"; };
 		AA0100000000000000000011 /* HealthPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthPlugin.swift; sourceTree = "<group>"; };
 		AA0100000000000000000013 /* HealthPlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HealthPlugin.m; sourceTree = "<group>"; };
-		AA0100000000000000000017 /* BeastViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeastViewController.swift; sourceTree = "<group>"; };
 		AA0100000000000000000015 /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
+		AA0100000000000000000017 /* BeastViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeastViewController.swift; sourceTree = "<group>"; };
 		AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF51FD2D460BCFE21FA515B2 /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
+		BEAAD856C9D1BC585224435E /* BeastLiveActivity.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BeastLiveActivity.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F00F32BF7DF8AC104701A0FB /* LiveActivityPlugin.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = LiveActivityPlugin.m; sourceTree = "<group>"; };
 		FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
+		FEC1699D5A0D457914B00544 /* LiveActivityPlugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LiveActivityPlugin.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +94,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D62CF5505297B678AE0CD1A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66C7FB441CFCBEAD936E7DC3 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -61,8 +109,29 @@
 			isa = PBXGroup;
 			children = (
 				AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */,
+				E9BEA31A588B516C0863D3D6 /* iOS */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		38EBA67EB9E8C22804926A4A /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				2114137CFB0D1C72DDBB1F6A /* BeastActivityAttributes.swift */,
+			);
+			name = Shared;
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		4728251120312309F3300402 /* BeastLiveActivity */ = {
+			isa = PBXGroup;
+			children = (
+				672150B62AD8EBE95684B242 /* BeastLiveActivityBundle.swift */,
+				4124CC1E2DBCD92F0AE7C46E /* BeastLiveActivity.swift */,
+				7792EC32D75A533496DD303F /* Info.plist */,
+			);
+			name = BeastLiveActivity;
+			path = BeastLiveActivity;
 			sourceTree = "<group>";
 		};
 		504EC2FB1FED79650016851F = {
@@ -72,6 +141,8 @@
 				504EC3051FED79650016851F /* Products */,
 				7F8756D8B27F46E3366F6CEA /* Pods */,
 				27E2DDA53C4D2A4D1A88CE4A /* Frameworks */,
+				4728251120312309F3300402 /* BeastLiveActivity */,
+				38EBA67EB9E8C22804926A4A /* Shared */,
 			);
 			sourceTree = "<group>";
 		};
@@ -79,6 +150,7 @@
 			isa = PBXGroup;
 			children = (
 				504EC3041FED79650016851F /* App.app */,
+				BEAAD856C9D1BC585224435E /* BeastLiveActivity.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -101,6 +173,8 @@
 				504EC3131FED79650016851F /* Info.plist */,
 				2FAD9762203C412B000D30F8 /* config.xml */,
 				50B271D01FEDC1A000F3C39B /* public */,
+				FEC1699D5A0D457914B00544 /* LiveActivityPlugin.swift */,
+				F00F32BF7DF8AC104701A0FB /* LiveActivityPlugin.m */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -114,9 +188,34 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		E9BEA31A588B516C0863D3D6 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				26C3C6D4AB29A2265C9021DE /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		3C1D4D14E55DE23119BBB626 /* BeastLiveActivity */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 80B611A0B0CB55557E605378 /* Build configuration list for PBXNativeTarget "BeastLiveActivity" */;
+			buildPhases = (
+				1C1D49B3C3999B94B983923C /* Sources */,
+				D62CF5505297B678AE0CD1A8 /* Frameworks */,
+				10D0B88B8900B79ADDE749B6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BeastLiveActivity;
+			productName = BeastLiveActivity;
+			productReference = BEAAD856C9D1BC585224435E /* BeastLiveActivity.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		504EC3031FED79650016851F /* App */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 504EC3161FED79650016851F /* Build configuration list for PBXNativeTarget "App" */;
@@ -126,10 +225,12 @@
 				504EC3011FED79650016851F /* Frameworks */,
 				504EC3021FED79650016851F /* Resources */,
 				9592DBEFFC6D2A0C8D5DEB22 /* [CP] Embed Pods Frameworks */,
+				4A884960BE297528DDD362FF /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				5C44B7321A340ABE7F80A3AC /* PBXTargetDependency */,
 			);
 			name = App;
 			productName = App;
@@ -161,18 +262,24 @@
 				Base,
 			);
 			mainGroup = 504EC2FB1FED79650016851F;
-			packageReferences = (
-			);
 			productRefGroup = 504EC3051FED79650016851F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				504EC3031FED79650016851F /* App */,
+				3C1D4D14E55DE23119BBB626 /* BeastLiveActivity */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		10D0B88B8900B79ADDE749B6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		504EC3021FED79650016851F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -225,6 +332,16 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1C1D49B3C3999B94B983923C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AB45FE8108978012535C4168 /* BeastLiveActivityBundle.swift in Sources */,
+				A1D4C771834476C894AC6DB7 /* BeastLiveActivity.swift in Sources */,
+				F6FBAD113509096CF082B13B /* BeastActivityAttributes.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		504EC3001FED79650016851F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -236,10 +353,22 @@
 				AA0100000000000000000012 /* HealthPlugin.swift in Sources */,
 				AA0100000000000000000014 /* HealthPlugin.m in Sources */,
 				AA0100000000000000000016 /* BeastViewController.swift in Sources */,
+				6E0905D4BD5C5AB62CF5A8AE /* BeastActivityAttributes.swift in Sources */,
+				BDDE5442B8831D898FCE313D /* LiveActivityPlugin.swift in Sources */,
+				730B6C5817EEC9A12B8972E0 /* LiveActivityPlugin.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5C44B7321A340ABE7F80A3AC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = BeastLiveActivity;
+			target = 3C1D4D14E55DE23119BBB626 /* BeastLiveActivity */;
+			targetProxy = 377577775A4CA96656D9D9E7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		504EC30B1FED79650016851F /* Main.storyboard */ = {
@@ -411,6 +540,49 @@
 			};
 			name = Release;
 		};
+		69FC922A1677C84DF0ACD24B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = NB9HJKM38D;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = BeastLiveActivity/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.juansuarez.beast.app.LiveActivity;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B360AF4A677F2DFFD87CF961 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = NB9HJKM38D;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = BeastLiveActivity/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.juansuarez.beast.app.LiveActivity;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -428,6 +600,15 @@
 			buildConfigurations = (
 				504EC3171FED79650016851F /* Debug */,
 				504EC3181FED79650016851F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		80B611A0B0CB55557E605378 /* Build configuration list for PBXNativeTarget "BeastLiveActivity" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69FC922A1677C84DF0ACD24B /* Release */,
+				B360AF4A677F2DFFD87CF961 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
