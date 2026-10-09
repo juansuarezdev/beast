@@ -1,6 +1,6 @@
-# Self-hosting openGym
+# Self-hosting Beast
 
-openGym is two small containers (a web server and an API) plus a folder of your data.
+Beast is two small containers (a web server and an API) plus a folder of your data.
 This guide takes you from "just cloned it" to "using it from my phone over the internet".
 
 **On this page**
@@ -26,7 +26,7 @@ Requirements: [Docker](https://docs.docker.com/get-docker/) with the Compose plu
 
 ```bash
 git clone https://github.com/DuarteSantos8/openGym   # or https://gitlab.com/DuarteSantos8/opengym — same repo
-cd openGym
+cd Beast
 cp .env.example .env
 docker compose pull   # prebuilt images from GitLab's registry (amd64 + arm64; the same images are on ghcr.io) — or skip and build from source
 docker compose up -d
@@ -48,14 +48,14 @@ Logs: `docker compose logs -f`. Stop: `docker compose down`.
 
 ## 2. Understand the passkey requirement (important)
 
-openGym signs you in with **passkeys** (WebAuthn). Browsers enforce two rules:
+Beast signs you in with **passkeys** (WebAuthn). Browsers enforce two rules:
 
 1. Passkeys are bound to an exact **hostname** (`RP_ID`).
 2. They only work over **HTTPS** — with one exception: `http://localhost`.
 
 So `http://localhost:8080` works on the machine running Docker, but **another device (your
 phone) cannot use `http://<your-LAN-ip>:8080`** — that's neither localhost nor HTTPS, so the
-passkey prompt won't appear. To use openGym from your phone you need a real HTTPS hostname.
+passkey prompt won't appear. To use Beast from your phone you need a real HTTPS hostname.
 
 (You can still open it over LAN in **guest mode**, which stores data only in that browser — or
 turn on **password sign-in**, see [§4](#password-sign-in-optional).)
@@ -84,7 +84,7 @@ you're poking at the API directly:
 
 > Want HTTPS **without** exposing anything to the internet — a valid certificate on a LAN-only address? See [SELF_HOSTING_HTTPS.md](./SELF_HOSTING_HTTPS.md) (wildcard cert via a DNS challenge, Caddy in front).
 
-Put openGym behind something that terminates TLS for a hostname you control, then point it at
+Put Beast behind something that terminates TLS for a hostname you control, then point it at
 the `web` container. Pick whichever you already run:
 
 ### Option A — Cloudflare Tunnel (no open ports)
@@ -103,7 +103,7 @@ gym.example.com {
 ### Option C — Traefik / nginx / Nginx Proxy Manager
 
 Route `gym.example.com` (HTTPS) → `web:80` (or `<docker-host>:8080`). Any reverse proxy works —
-openGym only needs the browser to reach it over `https://gym.example.com`. If that proxy caps
+Beast only needs the browser to reach it over `https://gym.example.com`. If that proxy caps
 request bodies (nginx does, at 1 MiB by default), allow at least 5 MiB on `/api/` — the app syncs
 its whole history in one PUT; the bundled web image already allows 5 MiB, matching the API. The
 photos and videos people attach to their own exercises need more room and more time on
@@ -116,7 +116,7 @@ Then set your domain in `.env` and restart:
 RP_ID=gym.example.com
 ORIGIN=https://gym.example.com
 WEB_PORT=8080
-RP_NAME=openGym
+RP_NAME=Beast
 ```
 
 ```bash
@@ -163,7 +163,7 @@ The sign-in and create-profile screens open in that language, and so does every 
 has never picked one in **Settings → Language**. Anyone's own choice there always wins, and
 profiles that existed before this setting keep the language they have — the app cannot tell an
 old profile that chose English from one that never looked, so it leaves them alone. Without
-`DEFAULT_LANG`, a new visitor starts in their browser's language when openGym has it, else
+`DEFAULT_LANG`, a new visitor starts in their browser's language when Beast has it, else
 English. A code the app has no translation for is ignored. The phone app in local mode has no
 server to ask and is unaffected.
 
@@ -258,7 +258,7 @@ dashboard marks every profile that has a password.
 **Signing in with an e-mail.** Settings → Account also gets a **Sign-in e-mail** row, right under
 the password, and **Create new profile** with a password has an optional e-mail field. Whoever
 adds an address can type it at **Sign in with password** instead of their profile name (case and
-spaces do not matter). openGym has no mail server and **never sends anything** to it: there is no
+spaces do not matter). Beast has no mail server and **never sends anything** to it: there is no
 verification mail and no reset mail — a forgotten password is still reset with the admin's code
 below, which can be redeemed with the name or the e-mail. So the address is not proven to belong
 to anyone; it is only a second name that points at the account, and the password still opens it.
@@ -357,7 +357,7 @@ from Settings → "Pair the mobile app", as with a passkey.
 Running Kubernetes? Example manifests (Deployment, PVCs, Service, Gateway API route) are in
 `kubernetes/`, described in [SELF_HOSTING_KUBERNETES.md](SELF_HOSTING_KUBERNETES.md).
 
-The defaults assume openGym is the only thing here: a service called `api` on port 3000, and nginx
+The defaults assume Beast is the only thing here: a service called `api` on port 3000, and nginx
 on port 80 inside its container. If you are merging this into a compose file that already has an
 `api`, or you put the web container behind your own reverse proxy on a different port, four
 settings in `.env` move those without editing any config file:
@@ -368,7 +368,7 @@ NGINX_PORT=80              # port the web container listens on, inside the conta
 BACKEND=api                # name of the API service that /api is proxied to
 PORT=3000                  # port the API listens on; web proxies to the same value
 RESOLVER=127.0.0.11        # DNS nginx resolves BACKEND with — Docker's, unless you are not on Docker
-BASE_PATH=                 # subpath openGym is served under, e.g. /gym — see below; empty = site root
+BASE_PATH=                 # subpath Beast is served under, e.g. /gym — see below; empty = site root
 SESSION_DAYS=90            # how long a sign-in lasts
 ```
 
@@ -392,9 +392,9 @@ Note the difference from `VITE_IMG_BASE` / `VITE_GIF_BASE` (see Troubleshooting)
 build-time values baked into the frontend bundle, and setting them next to `docker compose` does
 nothing to an image you pulled.
 
-### Serving openGym under a subpath
+### Serving Beast under a subpath
 
-openGym can live at `https://example.com/gym/` rather than on a host of its own. Which of the two
+Beast can live at `https://example.com/gym/` rather than on a host of its own. Which of the two
 setups below you need depends on one thing: whether your reverse proxy strips the prefix before
 the container sees the request.
 
@@ -418,7 +418,7 @@ BASE_PATH=/gym
 ```
 
 That is a start-up setting like the others above, so it works on a prebuilt image. Forward only
-the prefix to the container — openGym does not serve itself at the site root as well, and a copy
+the prefix to the container — Beast does not serve itself at the site root as well, and a copy
 reached there would look for an API that is not on that path.
 
 Either way, keep `ORIGIN` and `RP_ID` pointing at the address in the browser's bar
@@ -504,7 +504,7 @@ tar czf opengym-backup-$(date +%F).tar.gz --exclude=data/uploads data/
 
 Restored without them, every profile is intact, and an exercise whose file is gone shows a
 placeholder until one of its owner's devices — each keeps its own copy — uploads it again. When
-you move openGym to another server, copy the whole `data/`, `uploads/` included; each person can
+you move Beast to another server, copy the whole `data/`, `uploads/` included; each person can
 also carry their own through Settings → *Export with photos & videos* and import it there.
 
 If you enabled the AI Coach with the Codex provider, note what this archive deliberately does
@@ -520,7 +520,7 @@ in this archive — and unreadable without the secret next to them, like everyth
 
 ## 7. Notifications
 
-openGym can push two kinds of alert to your phone/desktop, even when the app isn't open:
+Beast can push two kinds of alert to your phone/desktop, even when the app isn't open:
 rest-timer-over, and a reminder on days you have a workout planned but haven't logged one yet.
 Turn it on per-profile in **Settings → Notifications** (requires a signed-in passkey profile and
 HTTPS — see section 3).
@@ -545,7 +545,7 @@ instance the switch shows as unsupported. Nothing to configure server-side eithe
 refuses the lock while the phone is in Low Power Mode.
 
 Push services like a contact address for whoever runs the server, in case they ever need to reach
-you about your pushes. openGym sends your `ORIGIN` by default; set `VAPID_SUBJECT=mailto:you@example.com`
+you about your pushes. Beast sends your `ORIGIN` by default; set `VAPID_SUBJECT=mailto:you@example.com`
 in `.env` if you would rather they had an inbox.
 
 ## 8. Updating
@@ -617,15 +617,15 @@ everybody registers again — which is why it pays to settle the domain before o
 
 ## Which passkey providers work
 
-openGym asks for a passkey and nothing more specific: no particular kind of device, no platform
+Beast asks for a passkey and nothing more specific: no particular kind of device, no platform
 authenticator, no attestation, and sign-in lets the browser offer any passkey it can find for
 your hostname. So whatever stores passkeys on your device works, and which one you get is
-decided by your operating system and browser, not by openGym. The common questions:
+decided by your operating system and browser, not by Beast. The common questions:
 
 **Can I keep my passkey in Bitwarden, 1Password, Proton Pass or another password manager on
 Android?** Yes, on Android 14 or later. Switch the app on as a passkey provider in the system
 settings (*Passwords, passkeys & accounts*, or *Passwords & accounts*; the name varies by
-manufacturer). The system then offers that app when openGym asks to create or use a passkey. If
+manufacturer). The system then offers that app when Beast asks to create or use a passkey. If
 Chrome keeps offering only Google Password Manager, look under *Autofill services* in Chrome's
 own settings for the option to use another service. On Android 13 and earlier, passkeys can only
 be stored in Google Password Manager. (#101)
@@ -639,7 +639,7 @@ of its own (Windows Hello works in Firefox) with a code from your phone, below. 
 **Can one profile have more than one passkey?** Yes. **Settings → Account → Passkeys** lists
 them — a name, when each was added and last used — and adds, renames or removes one. Adding one
 from there is for anything this browser can reach: another password manager, a security key, or
-your phone through the browser's own QR prompt. For a second device that can open openGym itself
+your phone through the browser's own QR prompt. For a second device that can open Beast itself
 (a phone, a work laptop), use **Settings → Account → Add another device**: it shows a code of 12
 characters and a QR code of a link that carries it. Scan it with the other device, or type the
 code there under **Use a code from your other device** on the sign-in screen; the other device
@@ -694,7 +694,7 @@ browser (see section 2).
 | Notifications switch is off although I turned it on | The server no longer holds the subscription (rebuilt `data/db.json`, regenerated `vapid.json`); the app re-registers on the next start, or switch it on again. On iOS, push only works from the Home Screen icon. |
 | Want to reset a stuck login | Delete the cookie in your browser; sessions are just signed cookies. |
 | The app says "Your server no longer accepts this phone" (or "this browser") | The server answered 401. Usual causes: "sign out everywhere" was used, the account was disabled, `data/secret` was lost or replaced when the stack was moved (every session and pairing dies with it), or a proxy with its own login rejects requests that carry `Authorization: Bearer`. Nothing on the device is lost: pair the phone again (browser: Settings → "Pair the mobile app"), or sign in again in the browser, and what the device kept is merged into the account. |
-| The app says the server "answered with something other than openGym (HTTP 200)" | Something other than the API answered `/api/*` with a success page — an auth proxy's sign-in page, or a catch-all route serving `index.html`. Every API answer is JSON; forward `/api/*` to the API unchanged. |
+| The app says the server "answered with something other than Beast (HTTP 200)" | Something other than the API answered `/api/*` with a success page — an auth proxy's sign-in page, or a catch-all route serving `index.html`. Every API answer is JSON; forward `/api/*` to the API unchanged. |
 | The app says "Your server answered with an error (HTTP …)" | The code is what the server or its proxy sent: 502/504 usually means the API container is down or unreachable from `web`, 413 that the proxy's upload limit is too small. Changes stay on the device and go through once the server answers. |
 | `docker compose pull` fails with "denied" / "unauthorized" | The prebuilt images aren't published yet, or need to be, or the GHCR package is still private — build from source instead (`docker compose up -d --build`). |
 | Exercise images/GIFs blank when a routine is open | Fixed in current images (issue #79). On an older build, see the note below. |

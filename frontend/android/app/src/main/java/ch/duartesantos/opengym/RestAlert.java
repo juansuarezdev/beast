@@ -86,7 +86,7 @@ public final class RestAlert {
             am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
             exact = false;
         }
-        if (!exact) Log.w("openGym", "exact alarms not allowed; the rest countdown sounds the end itself");
+        if (!exact) Log.w("Beast", "exact alarms not allowed; the rest countdown sounds the end itself");
         if (Build.VERSION.SDK_INT >= 26) {
             NotificationManager nm = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
             ensureChannel(ctx, nm, channelId, importanceOf(importance), visibilityOf(visibility), vibrate);
@@ -345,7 +345,7 @@ public final class RestAlert {
             if (Build.VERSION.SDK_INT >= 26) ctx.startForegroundService(i);
             else ctx.startService(i);
         } catch (Exception e) {
-            Log.w("openGym", "rest countdown not started", e);
+            Log.w("Beast", "rest countdown not started", e);
         }
     }
 

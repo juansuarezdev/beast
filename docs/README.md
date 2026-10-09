@@ -1,4 +1,4 @@
-# openGym documentation
+# Beast documentation
 
 Pick the part that matches what you're doing. If you just have a question, try the
 [FAQ](FAQ.md) first.

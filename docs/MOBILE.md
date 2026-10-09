@@ -9,7 +9,7 @@ on is for building the app yourself.
 
 ## How the phone app works
 
-openGym ships in two flavors from the same codebase:
+Beast ships in two flavors from the same codebase:
 
 | | **Self-hosted** (this repo's default) | **Mobile app** (`VITE_MOBILE=1`) |
 |---|---|---|
@@ -28,7 +28,7 @@ through the OS share sheet instead of a browser download.
 ### Connecting the app to your own server
 
 On first launch the app asks how you want to use it. Alongside the fully local mode above,
-you can instead **connect it to a self-hosted openGym server** — your data then lives there,
+you can instead **connect it to a self-hosted Beast server** — your data then lives there,
 synced the same way the browser PWA does, instead of only on the phone. This is a mode of the
 same app, not a different build or download.
 
@@ -68,7 +68,7 @@ status bar says so on every screen, and stays until the condition is gone:
 |---|---|---|
 | *Offline — your changes are saved on this device…* | No answer at all: no network, the server is down, or it did not answer within 20 s (60 s for an upload). | Nothing — it syncs by itself once the server is reachable. **Try again** checks at once. |
 | *Your server answered with an error (HTTP 502)…* | The server (or the proxy in front of it) answered with an error. The code is the one the server sent. | Check the server and its proxy logs; **Try again** once it is back. A 413 means the proxy's upload limit is too small (`client_max_body_size`). |
-| *Your server's address answered with something other than openGym (HTTP 200)…* | Something else answered in the server's place — typically a proxy's sign-in page or a catch-all that serves the web app for `/api/*`. | Let `/api/*` through to the openGym API unchanged, including the `Authorization` header. |
+| *Your server's address answered with something other than Beast (HTTP 200)…* | Something else answered in the server's place — typically a proxy's sign-in page or a catch-all that serves the web app for `/api/*`. | Let `/api/*` through to the Beast API unchanged, including the `Authorization` header. |
 | *Your server no longer accepts this phone…* | The server refused the phone's token (401): "sign out everywhere", the account disabled, a `data/secret` that was replaced, a token older than `SESSION_DAYS`, or a proxy with its own login that rejects `Authorization: Bearer`. | **Pair again**: in a signed-in browser open Settings → "Pair the mobile app" and enter the new code. The address is already filled in. |
 | *This phone is no longer paired with your server…* | A phone that an earlier version of the app unpaired by itself after its token was refused. The address is gone. | **Pair again**, typing the address. |
 | *On this phone only — not connected to a server* | Local mode, chosen at first launch or after Disconnect. Said quietly. | Nothing, or **Connect** to pair with a server. |
@@ -135,7 +135,7 @@ plays; the zip export opens the share sheet.
 - **Android:** Android Studio (bundles the SDK). Java 21 for Gradle.
 - **iOS:** a Mac with Xcode 15+ and CocoaPods (`brew install cocoapods`). A free Apple ID
   is enough to run the app on your own iPhone (see below); paid membership is only needed
-  for App Store distribution, which openGym doesn't do.
+  for App Store distribution, which Beast doesn't do.
 
 ## Build & run
 
@@ -158,7 +158,7 @@ into both native projects — re-run it after every web-code change before build
 
 The native iOS app can write each finished live workout to Apple Health as a strength-training
 workout (start, end, duration), so apps that read Health — Bevel, Fitness — count it. Write-only:
-openGym reads nothing back.
+Beast reads nothing back.
 
 - **Turn on:** Settings → During a workout → **Save workouts to Apple Health** (only shown in the
   native iOS app). The iOS permission sheet appears the first time.
@@ -183,7 +183,7 @@ npx @capacitor/assets generate --iconBackgroundColor '#0c0e12' --splashBackgroun
 
 ## Distribution — deliberately no app stores
 
-openGym's mobile app is not on the Play Store or App Store, and that's a choice: no store
+Beast's mobile app is not on the Play Store or App Store, and that's a choice: no store
 accounts, no store rules, no yearly fees between you and an open-source app.
 
 ### Android — sideload the APK
@@ -265,7 +265,7 @@ membership, the distribution certificate and profile as protected file variables
   reads `version` out of it), so the two drifting apart shows up as a misnamed file.
 - Tagging `vX.Y.Z` is what ships everything: images, APK, release notes. Don't push a version
   tag you don't mean to release — `v*` tags are protected for that reason.
-- **License:** openGym is AGPL-3.0, which by itself sits badly with app-store terms of
+- **License:** Beast is AGPL-3.0, which by itself sits badly with app-store terms of
   service. `NOTICE.md` carries an app-store exception (an additional permission under
   AGPL §7) granted by the copyright holder — relevant only if store distribution ever happens.
 - The app requests notification permission when the workout-day reminder is switched on,

@@ -1,8 +1,10 @@
 <div align="center">
 
-<img src="assets/banner.png" alt="openGym" width="720">
+<img src="assets/banner.png" alt="Beast" width="720">
 
 **A self-hosted gym and body-weight tracker you actually own.**
+
+<sub>Beast is a personal fork of [openGym](https://github.com/DuarteSantos8/openGym) by Duarte Santos, licensed AGPL-3.0-or-later.</sub>
 
 Plan your week, run guided workouts, log every set and your body weight —<br>
 on your phone, synced across your devices, behind your own passkey login.
@@ -34,10 +36,10 @@ on your phone, synced across your devices, behind your own passkey login.
 </tr>
 </table>
 
-## Why openGym
+## Why Beast
 
 Most workout apps keep your data on their servers, push you towards a subscription, or vanish
-when the company does. openGym runs on your own box, keeps your data in a folder you control, and
+when the company does. Beast runs on your own box, keeps your data in a folder you control, and
 is yours to fork. It still behaves like a modern app: installable on the home screen, passkey
 sign-in, works offline, syncs between your phone and your laptop.
 
@@ -116,7 +118,7 @@ You need [Docker](https://docs.docker.com/get-docker/) with Compose.
 
 ```bash
 git clone https://github.com/DuarteSantos8/openGym
-cd openGym
+cd Beast
 cp .env.example .env
 docker compose pull      # prebuilt images, amd64 + arm64 (skip this to build from source)
 docker compose up -d
@@ -147,7 +149,7 @@ Traefik and nginx, and there are separate guides for
 | `NGINX_PORT` | Port the web container listens on inside the container | `80` |
 | `BACKEND` | Name of the API service that `/api` is proxied to | `api` |
 | `PORT` | Port the API listens on; the web container proxies to the same value | `3000` |
-| `RP_NAME` | Name shown in the passkey prompt | `openGym` |
+| `RP_NAME` | Name shown in the passkey prompt | `Beast` |
 | `SESSION_DAYS` | How long a sign-in lasts, in days | `90` |
 | `ADMIN_UIDS` | User ids that get the admin dashboard, comma-separated | *(none)* |
 | `INVITE_ONLY` | Require an invite code to create a profile | *(off)* |
@@ -175,7 +177,7 @@ on the phone, with native reminders and a rest countdown in the notification sha
 
 - **Android:** download the signed APK from the [latest release](https://github.com/DuarteSantos8/openGym/releases/latest)
   or the [website](https://opengym.duarte-santos.ch). Each build sits next to its `.sha256`, and
-  the app checks for updates itself. openGym is deliberately not on the Play Store.
+  the app checks for updates itself. Beast is deliberately not on the Play Store.
 - **iPhone:** Apple doesn't allow installs outside the App Store. Self-host and add the PWA to your
   home screen from Safari, or build the native app onto your own device with Xcode.
 
@@ -285,9 +287,9 @@ exists because its CI builds the release artifacts: the signed APK, the multi-ar
 SBOMs. Nothing is merged there by hand. In the changelog, `!NN` refers to a GitLab merge request
 from the weeks in August and September 2026 when the project lived there.
 
-## How openGym is built
+## How Beast is built
 
-People have asked about this, so plainly: **openGym is developed with
+People have asked about this, so plainly: **Beast is developed with
 [Claude Code](https://claude.com/claude-code)**, Anthropic's coding agent. A large share of the
 code, tests and documentation is drafted in Claude Code sessions, and the repository carries a
 [`CLAUDE.md`](CLAUDE.md) with the project context those sessions start from.
@@ -309,7 +311,7 @@ the same way.
 
 ## Support
 
-openGym is free and stays free: AGPL, no paid tier, nothing held back for sponsors. If it replaced a
+Beast is free and stays free: AGPL, no paid tier, nothing held back for sponsors. If it replaced a
 paid tracker for you and you'd like to chip in, there's a coffee button below. A star, a bug report
 or a pull request helps just as much.
 
@@ -321,7 +323,7 @@ or a pull request helps just as much.
 
 ## License
 
-**openGym's own code** is licensed under the [GNU AGPL v3.0](LICENSE). You can self-host, use,
+**Beast's own code** is licensed under the [GNU AGPL v3.0](LICENSE). You can self-host, use,
 modify and share it; if you run a modified version as a network service, you have to offer that
 version's source under the same license.
 
@@ -331,7 +333,7 @@ version's source under the same license.
 > [hasaneyldrm/exercises-dataset](https://github.com/hasaneyldrm/exercises-dataset) under MIT. The
 > images and animations are third-party content under neither MIT nor the AGPL, and their ownership
 > is disputed: the dataset attributes them to [Gym visual](https://gymvisual.com/), while
-> [ExerciseDB/AscendAPI](https://exercisedb.io/faq) claims to own them. openGym doesn't redistribute
+> [ExerciseDB/AscendAPI](https://exercisedb.io/faq) claims to own them. Beast doesn't redistribute
 > them (your instance downloads them on first start) and doesn't relicense them. To reuse that
 > media, clear it with the rights holder first.
 

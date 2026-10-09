@@ -5,7 +5,7 @@ import HealthKit
 /**
  * Minimal local Capacitor plugin that writes a finished session to Apple Health as a
  * strength-training workout, so apps that read Health (Bevel, Fitness, …) count it.
- * Write-only: openGym never reads anything back from Health.
+ * Write-only: Beast never reads anything back from Health.
  *
  * Usage from JS (lib/health.js):
  *   const Health = registerPlugin('Health');

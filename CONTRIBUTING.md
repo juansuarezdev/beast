@@ -1,6 +1,6 @@
-# Contributing to openGym
+# Contributing to Beast
 
-Thanks for taking a look. openGym is deliberately small and light on dependencies, and the aim is
+Thanks for taking a look. Beast is deliberately small and light on dependencies, and the aim is
 to keep it that way: easy to read, easy to self-host.
 
 ## Project layout
@@ -52,8 +52,8 @@ cd mcp && npm test
 
 ## Using AI tools
 
-openGym itself is developed with Claude Code (see
-[How openGym is built](README.md#how-opengym-is-built)), and [`CLAUDE.md`](CLAUDE.md) holds the
+Beast itself is developed with Claude Code (see
+[How Beast is built](README.md#how-opengym-is-built)), and [`CLAUDE.md`](CLAUDE.md) holds the
 project context for it. You're welcome to use whatever tools you like for a pull request. The bar
 is the same either way: you understand the change, it's tested, and you can answer questions about
 it in review.

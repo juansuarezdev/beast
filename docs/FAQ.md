@@ -4,7 +4,7 @@ Short answers, with a link to the long one.
 
 ### What does it cost?
 
-Nothing. openGym is open source under the AGPL: no subscription, no paid tier, no ads. If you'd like
+Nothing. Beast is open source under the AGPL: no subscription, no paid tier, no ads. If you'd like
 to support it anyway, there's [Buy Me a Coffee](https://buymeacoffee.com/duartesantos).
 
 ### Do I need my own server?
@@ -21,7 +21,7 @@ No, there are three ways to use it:
 ### Is there an iPhone app?
 
 Not in the App Store, and Apple doesn't allow installing apps from anywhere else. On an iPhone you can
-self-host and add openGym to your home screen from Safari (it's a full PWA that works offline), or
+self-host and add Beast to your home screen from Safari (it's a full PWA that works offline), or
 build the native app onto your own phone with Xcode. Both are described in [MOBILE.md](MOBILE.md).
 An App Store build is on the [roadmap](../ROADMAP.md).
 
@@ -45,7 +45,7 @@ images and animations from the upstream dataset, once. The AI coach, if an admin
 the training data it needs to the provider you configured; [AI_COACH.md](AI_COACH.md) lists exactly
 what. Push notifications go through your browser's push service, as all web push does.
 
-### Was openGym written with AI?
+### Was Beast written with AI?
 
 It's developed with [Claude Code](https://claude.com/claude-code), Anthropic's coding agent, and a
 large share of the code, tests and docs is drafted that way. The maintainer decides what goes in,
@@ -93,8 +93,8 @@ an exercise and something measured. See [DATA_IMPORTS.md](DATA_IMPORTS.md).
 
 ### Can I reuse the exercise images in my own project?
 
-Not on openGym's say-so. The images and animations aren't covered by openGym's license and their
-ownership is disputed; openGym only downloads them for your instance. Details in
+Not on Beast's say-so. The images and animations aren't covered by Beast's license and their
+ownership is disputed; Beast only downloads them for your instance. Details in
 [NOTICE.md](../NOTICE.md).
 
 ### Where do I ask something that isn't here?

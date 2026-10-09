@@ -1,4 +1,4 @@
-# openGym — GitLab CI/CD
+# Beast — GitLab CI/CD
 #
 # This is the pipeline that actually gates and ships the project. It replaces the
 # GitHub Actions workflows (.github/, dormant since the account suspension) and the
@@ -500,7 +500,7 @@ build:web-check:
 
 # The official signed APK. Signing keys live in protected CI variables, so they only
 # exist on protected refs (main and v* tags) — a fork's MR builds an unsigned APK and
-# cannot get at the key. Sideload-only by design: openGym is on no app store.
+# cannot get at the key. Sideload-only by design: Beast is on no app store.
 #
 # Needs three CI/CD variables (Settings → CI/CD → Variables), all *protected*:
 #   ANDROID_KEYSTORE_B64       file    base64 of opengym-release.keystore
@@ -875,7 +875,7 @@ release:
       cat release-notes.md
   release:
     tag_name: $CI_COMMIT_TAG
-    name: "openGym $CI_COMMIT_TAG"
+    name: "Beast $CI_COMMIT_TAG"
     description: release-notes.md
     assets:
       links:
