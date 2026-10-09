@@ -485,6 +485,14 @@ export default function Settings() {
           value={S.gifSize === 'mini' || S.gifSize === 'off' ? S.gifSize : 'full'}
           onChange={v => update(s => { s.gifSize = v })} />
       </Row>
+      {/* The list layout shows every exercise's animation at once, so it has its own size: a small
+          thumbnail by default, tapped open one exercise at a time. */}
+      <Row icon="list" iconTint="var(--green)" title={t('Animations in list view')}>
+        <Segmented className="seg-inline"
+          options={[{ value: 'off', label: t('Hidden') }, { value: 'mini', label: t('Small') }, { value: 'full', label: t('Full') }]}
+          value={S.listGifSize === 'off' || S.listGifSize === 'full' ? S.listGifSize : 'mini'}
+          onChange={v => update(s => { s.listGifSize = v })} />
+      </Row>
       <Row icon="bell" iconTint="var(--pink)" title={t('Sounds')}>
         {/* Turning Sounds on is a tap: unlock the audio context now so a timer that ends before
             the next set check can already sound (iOS, #152). */}

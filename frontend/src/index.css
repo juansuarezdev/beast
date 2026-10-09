@@ -774,6 +774,12 @@ body.chips-dragging *{cursor:inherit}
    at 180px you had to scroll a full screen between two exercises done back-to-back */
 .exmedia.compact img{height:120px}
 .exmedia.mini img{height:84px}
+/* list layout: every exercise shows its animation, so the small size is a thumbnail beside the name's
+   column, not a banner — a tap on its control opens just that one at full width */
+.exmedia.mini.list{width:104px;margin-bottom:6px}
+.exmedia.mini.list img,.exmedia.mini.list video,.exmedia.mini.list .exmedia-x{height:64px}
+.exmedia.mini.list .giftoggle{inset-inline-start:5px;bottom:5px;padding:4px 6px;font-size:0;gap:0}
+.exmedia.mini.list .giftoggle .icn{font-size:13px}
 /* both the animation and the still failed to load: a neutral tile instead of the browser's
    broken-image glyph; same heights as the picture so the card does not jump. tap retries. */
 .exmedia.broken{background:var(--surface-2)}

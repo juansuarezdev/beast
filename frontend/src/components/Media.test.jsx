@@ -52,6 +52,46 @@ describe('Media gifSize', () => {
     expect(host.querySelector('.exmedia.mini')).toBeTruthy()
   })
 
+  it('shows a small thumbnail in the list layout by default, and one tap opens just that exercise', () => {
+    mocks.S = { gifSize: 'full', workoutView: 'list' }
+    mount({ minimizable: true })
+    expect(host.querySelector('.exmedia.mini.list')).toBeTruthy()
+    expect(host.querySelector('.gifhint')).toBeFalsy()
+    act(() => { host.querySelector('.giftoggle').click() })
+    expect(host.querySelector('.exmedia.mini')).toBeFalsy()
+    expect(host.querySelector('.exmedia')).toBeTruthy()
+    // opening one exercise leaves the setting alone — it is that card's, not the profile's
+    expect(mocks.S.gifSize).toBe('full')
+    expect(mocks.S.listGifSize).toBeUndefined()
+    act(() => { host.querySelector('.giftoggle').click() })
+    expect(host.querySelector('.exmedia.mini.list')).toBeTruthy()
+  })
+
+  it('follows the list-view setting: hidden shows nothing, full shows the animation, and a tap shrinks it', () => {
+    mocks.S = { gifSize: 'full', listGifSize: 'off', workoutView: 'list' }
+    mount({ minimizable: true })
+    expect(host.innerHTML).toBe('')
+    mocks.S = { gifSize: 'full', listGifSize: 'full', workoutView: 'list' }
+    mount({ minimizable: true })
+    expect(host.querySelector('.exmedia')).toBeTruthy()
+    expect(host.querySelector('.exmedia.mini')).toBeFalsy()
+    act(() => { host.querySelector('.giftoggle').click() })
+    expect(host.querySelector('.exmedia.mini.list')).toBeTruthy()
+  })
+
+  it('hides the animation in the list layout too when it is hidden for the whole workout', () => {
+    mocks.S = { gifSize: 'off', listGifSize: 'full', workoutView: 'list' }
+    mount({ minimizable: true })
+    expect(host.innerHTML).toBe('')
+  })
+
+  it('leaves the cards layout on its own setting', () => {
+    mocks.S = { gifSize: 'full', listGifSize: 'off', workoutView: 'cards' }
+    mount({ minimizable: true })
+    expect(host.querySelector('.exmedia img')).toBeTruthy()
+    expect(host.querySelector('.exmedia.list')).toBeFalsy()
+  })
+
   it("renders nothing at all in the workout when gifSize is 'off'", () => {
     mocks.S = { gifSize: 'off' }
     mount({ minimizable: true })
@@ -143,7 +183,7 @@ describe('Media — a custom exercise', () => {
 
   it('does not play by itself in the workout\'s list layout, nor under reduced motion', async () => {
     await holding(MAIN, POSTER)
-    mocks.S = { gifSize: 'full', workoutView: 'list' }
+    mocks.S = { gifSize: 'full', listGifSize: 'full', workoutView: 'list' }
     await mountCustom(custom({ media: clip(8) }), { minimizable: true })
     expect(HTMLMediaElement.prototype.play).not.toHaveBeenCalled()
     expect(host.querySelector('.gifhint').textContent).toContain('tap to play')

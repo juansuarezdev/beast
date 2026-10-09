@@ -19,6 +19,7 @@
 // referrer. Nothing fetches it: no thumbnail, no favicon, no embed.
 import { useEffect, useRef, useState } from 'react'
 import { useStore } from '../store/useStore.js'
+import { useMediaSize } from './useMediaSize.js'
 import { t, exerciseNameFor } from '../lib/i18n.js'
 import { mediaOf, cleanUrl, linkKind } from '../lib/media-refs.js'
 import { mediaStore } from '../lib/media-store.js'
@@ -132,20 +133,19 @@ export function LinkCard({ url, compact, mini }) {
 /* ------------------------------------------------------------------ the big picture ------- */
 
 export default function CustomMedia({ ex, id, compact, minimizable }) {
-  const gifSize = useStore(s => s.S.gifSize)
-  const update = useStore(s => s.update)
+  const size = useMediaSize(minimizable)
   // The workout's list layout, from the store: only the workout card is minimizable.
   const listLayout = useStore(s => !!minimizable && ((s.S.active?.workoutView || s.S.workoutView) === 'list'))
   const m = mediaOf(ex)
   const link = cleanUrl(ex?.url)
   if (!m && !link) return null
-  if (minimizable && gifSize === 'off') return null
-  const mini = !!minimizable && gifSize === 'mini'
-  const toggleSize = e => { e.stopPropagation(); update(s => { s.gifSize = mini ? 'full' : 'mini' }) }
+  if (size.off) return null
+  const mini = size.mini
+  const toggleSize = e => { e.stopPropagation(); size.flip() }
   const toggle = minimizable
     ? <button className="giftoggle" onClick={toggleSize}><Icon name={mini ? 'expand' : 'minimize'} />{mini ? t('Expand') : t('Minimize')}</button>
     : null
-  const cls = 'exmedia' + (compact ? ' compact' : '') + (mini ? ' mini' : '')
+  const cls = 'exmedia' + (compact ? ' compact' : '') + (mini ? ' mini' : '') + (mini && size.list ? ' list' : '')
   const name = exerciseNameFor(ex)
   if (!m) return <LinkCard url={link} compact={compact} mini={mini} />
   const body = m.kind === 'video'

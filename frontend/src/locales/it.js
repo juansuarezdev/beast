@@ -1703,4 +1703,5 @@ export default {
   'RPE {0} against {1} aimed for — {2} {3} less help.': 'RPE {0} contro {1} previsto — {2} {3} di aiuto in meno.',
   'RPE {0} is on target — same weight again.': 'RPE {0} in linea — stesso peso.',
   'RPE {0} was harder than the {1} aimed for — same weight again.': 'RPE {0} è stato più duro del {1} previsto — stesso peso.',
+  'Animations in list view': 'Animazioni nella vista a elenco',
 }

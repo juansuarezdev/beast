@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { imgSrc, gifSrc } from '../lib/exercises.js'
-import { useStore } from '../store/useStore.js'
 import { t, exerciseNameFor } from '../lib/i18n.js'
 import Icon from './Icon.jsx'
 import CustomMedia, { CustomThumb } from './CustomMedia.jsx'
+import { useMediaSize } from './useMediaSize.js'
 
 // An exercise's picture, wherever one shows. A custom exercise goes to CustomMedia.jsx — its own
 // photo, GIF, video or link, from the local media store — and never through imgSrc/gifSrc, which
@@ -27,12 +27,11 @@ function BuiltinMedia({ ex, id, compact, minimizable }) {
   // on a white block. Now the still stands in for the animation, a neutral tile stands in for
   // both, and a tap tries again — no text, so nothing new to translate.
   const [failed, setFailed] = useState(null)
-  const gifSize = useStore(s => s.S.gifSize)
-  const update = useStore(s => s.update)
+  const size = useMediaSize(minimizable)
   if (!ex.gif) return null
-  if (minimizable && gifSize === 'off') return null
-  const mini = minimizable && gifSize === 'mini'
-  const toggleSize = e => { e.stopPropagation(); update(s => { s.gifSize = mini ? 'full' : 'mini' }) }
+  if (size.off) return null
+  const mini = size.mini
+  const toggleSize = e => { e.stopPropagation(); size.flip() }
   const showGif = playing && failed == null
   const onError = () => setFailed(showGif ? 'gif' : 'all')
   const onTap = () => {
@@ -40,7 +39,7 @@ function BuiltinMedia({ ex, id, compact, minimizable }) {
     setPlaying(p => !p)
   }
   return (
-    <div className={'exmedia' + (compact ? ' compact' : '') + (mini ? ' mini' : '') + (failed === 'all' ? ' broken' : '')} id={id} onClick={onTap}>
+    <div className={'exmedia' + (compact ? ' compact' : '') + (mini ? ' mini' : '') + (mini && size.list ? ' list' : '') + (failed === 'all' ? ' broken' : '')} id={id} onClick={onTap}>
       {failed === 'all'
         ? <div className="exmedia-x"><Icon name="dumbbell" /></div>
         : <img decoding="async" draggable={false} src={showGif ? gifSrc(ex) : imgSrc(ex)} alt={exerciseNameFor(ex)} onError={onError} />}

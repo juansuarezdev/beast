@@ -43,3 +43,13 @@ Component-level, no new `lib/` helper:
   `workout view header menu` describe blocks.
 - `frontend/src/views/Settings.workoutview.test.jsx` — the 3-way Segmented.
 - `frontend/src/sheets.workoutview.test.jsx` — `beginWorkout` / backfill snapshot behaviour.
+
+## Animations in list view
+
+Every exercise in the list layout shows its animation at once, so the layout has a size of its own,
+`S.listGifSize` (Settings → During a workout → **Animations in list view**): `mini` (the default, a
+64 px thumbnail), `full` or `off`. The control on a thumbnail opens just that exercise at full width
+and shrinks it again, without touching the setting. **Hidden** in "Exercise animations" hides the
+animation in both layouts. The cards layout keeps `S.gifSize` and its global control. The rule lives
+in `components/useMediaSize.js`.
+

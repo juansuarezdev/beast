@@ -88,6 +88,9 @@ export const DEF = {
   workoutView: 'cards',
   // Rest between sets follows how hard the set was: longer after heavy low-rep sets and failure,
   // shorter after light high-rep ones (lib/set-compare.js). Off until switched on.
+  // The animation size in the list layout, where every exercise shows one: 'mini' (a thumbnail, the
+  // default), 'full' or 'off' (components/useMediaSize.js).
+  listGifSize: 'mini',
   smartRest: false,
   // Weekly cardio goal in minutes; 0 is off (the Home card and Settings, lib/cardio-week.js).
   cardioGoalMin: 0,
