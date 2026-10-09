@@ -18,7 +18,7 @@ media once; here that is an initContainer. There are only a few resources to cre
 
 ```bash
 git clone https://github.com/DuarteSantos8/openGym   # or https://gitlab.com/DuarteSantos8/opengym — same repo
-cd Beast
+cd openGym
 # In kubernetes/deployment.yaml, set RP_ID and ORIGIN in spec.template.spec.containers[api].env
 # to your hostname, and the hostname in kubernetes/httproute.yaml.
 kubectl apply -k kubernetes/

@@ -118,7 +118,7 @@ You need [Docker](https://docs.docker.com/get-docker/) with Compose.
 
 ```bash
 git clone https://github.com/DuarteSantos8/openGym
-cd Beast
+cd openGym
 cp .env.example .env
 docker compose pull      # prebuilt images, amd64 + arm64 (skip this to build from source)
 docker compose up -d
