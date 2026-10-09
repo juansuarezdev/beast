@@ -28,6 +28,10 @@ describe('compareSetTo', () => {
     expect(compareSetTo({ min: 20, speed: 8 }, { min: 20, speed: 9.66 }, 'cardio', { speedUnit: 'mph' })).toEqual({ dir: 'up', text: '+1.03 mph' })
   })
 
+  it('counts metres, not reps, for a distance exercise', () => {
+    expect(compareSetTo({ w: 40, r: 30 }, { w: 40, r: 40 }, 'reps', { repWord: 'm' })).toEqual({ dir: 'up', text: '+10 m' })
+  })
+
   it('has nothing to say without a reference or without the numbers', () => {
     expect(compareSetTo(null, { w: 60, r: 8 }, 'reps')).toBeNull()
     expect(compareSetTo({ w: 60, r: 8 }, { w: 60, r: 0 }, 'reps')).toBeNull()

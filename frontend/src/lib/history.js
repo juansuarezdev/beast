@@ -1,7 +1,9 @@
 // Pure helpers over the state object S (ported 1:1 from the vanilla app).
 import { todayISO, isoOf, weekKey, weekStartOf, fmtNum } from './format.js'
 import { fmtSpeed } from './speed.js'
-import { isCardio, isBodyweightEq, isAssisted, betterWeight } from './exercises.js'
+import { repUnitOf, DISTANCE_STEP } from './functional.js'
+import { cardioKindFromName, distanceKmOf, distanceUnit, fromKm, paceText } from './cardio.js'
+import { EXIDX, isCardio, isBodyweightEq, isAssisted, betterWeight } from './exercises.js'
 import { phaseForSet, modeForSet, modeForEntry, isWarmupRow, normalizeMode, completedVolumeOf, hasCompletedWork, nextDropWeight, splitBurstReps, makeSideSet, isSideSet, syncSideAggregate, WEIGHT_ORIGIN_MANUAL, dropsOf, clustersOf } from './workout-model.js'
 const objectOf = value => value && typeof value === 'object' && !Array.isArray(value) ? value : {}
 // Completed-state-independent work rows whose authoritative mode matches the requested mode.
@@ -53,7 +55,8 @@ export const isPerSide = cfg => !!(cfg && cfg.side)
 export const sideReps = reps => (reps || 0) / 2
 // Unilateral work moves in pairs, so its rep target steps by two — 16, 18, 20 — and a total
 // that stayed odd would put a rep on one side and not the other.
-export const repStep = cfg => (isPerSide(cfg) ? 2 : 1)
+// Reps move by one, a per-side total by two, a distance by five metres.
+export const repStep = cfg => (isPerSide(cfg) ? 2 : repUnitOf(cfg) === 'm' ? DISTANCE_STEP : 1)
 
 // mm:ss for a work duration — seconds alone read badly past a minute ("90 s" vs "1:30").
 export function fmtSec(sec) {
@@ -115,10 +118,21 @@ export function setLabel(id, s, cfg, speedUnit) {
   // A set saved by an older build carries no target with it; the set's own fields still say what
   // it was — seconds for a timed set, minutes for cardio — so those are not read back as "0 reps".
   if (!cfg && !(s.r > 0)) { if (s.min > 0 || s.speed > 0) mode = 'cardio'; else if (s.sec > 0) mode = 'time' }
-  if (mode === 'cardio') return `${s.min || 0} min @ ${fmtSpeed(s.speed || 0, speedUnit)}`
+  if (mode === 'cardio') {
+    // A row logged by distance reads in its sport's terms — "30 min · 5 km · 6:00 /km"; one without
+    // (older rows, the speed columns of other cardio) keeps minutes at a speed.
+    const kind = cardioKindFromName(EXIDX[c.id]?.n)
+    if (kind && s.dist > 0 && s.min > 0) {
+      const pace = paceText(kind, s.speed, speedUnit)
+      return `${s.min} min · ${fromKm(distanceKmOf(s), kind, speedUnit)} ${distanceUnit(kind, speedUnit)}${pace ? ' · ' + pace : ''}`
+    }
+    return `${s.min || 0} min @ ${fmtSpeed(s.speed || 0, speedUnit)}`
+  }
   if (mode === 'time') return fmtSec(s.sec) + (s.w > 0 ? ` · ${fmtNum(s.w)}` : '')
   const bw = isBw(c)
-  const load = (w, reps) => (bw ? (w > 0 ? `+${fmtNum(w)} × ` : '') + reps : `${fmtNum(w || 0)}×${reps}`)
+  // Carries and sled work count metres in the same place reps go: "40×30 m".
+  const unitSuffix = repUnitOf(c) === 'm' ? ' m' : ''
+  const load = (w, reps) => (bw ? (w > 0 ? `+${fmtNum(w)} × ` : '') + reps : `${fmtNum(w || 0)}×${reps}`) + unitSuffix
   // A rest-pause set's reps read as its bursts, "60×10+4+2", the way the protocol is written
   // down. The row's own `r` is the total either way; a planned set's bursts already add up to it
   // (applyIntensifierPlan), while bursts added live sit on top of the activation set, which is
@@ -179,7 +193,7 @@ export function setsRepsOf(cfg) {
   const n = cfg.sets || 1
   if (mode === 'cardio') return `${n} × ${cfg.min || 20} min`
   if (mode === 'time') return `${n} × ${fmtSec(cfg.sec || 45)}`
-  return `${n} × ${repsOf(cfg)}`
+  return `${n} × ${repsOf(cfg)}${repUnitOf(cfg) === 'm' ? ' m' : ''}`
 }
 
 // One-line summary of a planned exercise ("3 × 10 · 60 kg"), shared by the routine editor

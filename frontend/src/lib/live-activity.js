@@ -6,6 +6,7 @@
 import { t } from './i18n.js'
 import { bestWeightForEntry, cascadeWeight, doneUnits, isBw, modeOf, repStep, setUnits } from './history.js'
 import { weightIncrement } from './progression.js'
+import { repWordOf } from './functional.js'
 import { fromSpeed, toSpeed } from './speed.js'
 import { WEIGHT_ORIGIN_MANUAL, isSideSet, setSideField, toggleSide } from './workout-model.js'
 
@@ -18,7 +19,7 @@ const valuesOf = ({ row, side }) => (side ? row.sides[side] : row)
 
 // How the load of a row reads, by the kind of exercise it is: weight × reps, reps alone for a
 // bodyweight move, a time, or a duration at a speed.
-function loadText(mode, v, unit, speedUnit) {
+function loadText(mode, v, unit, speedUnit, repWord = t('reps')) {
   if (mode === 'cardio') {
     const run = v.min > 0 ? num(v.min) + ' min' : ''
     const speed = v.speed > 0 ? num(toSpeed(v.speed, speedUnit)) + ' ' + (speedUnit === 'mph' ? 'mph' : 'km/h') : ''
@@ -27,9 +28,9 @@ function loadText(mode, v, unit, speedUnit) {
   const w = v.w > 0 ? num(v.w) + ' ' + unit : ''
   const timed = v.sec > 0 && !(v.r > 0)
   const work = timed ? v.sec + 's' : v.r > 0 ? v.r : ''
-  if (w && work) return timed ? w + ' · ' + work : w + ' × ' + work
+  if (w && work) return timed ? w + ' · ' + work : w + ' × ' + work + (repWord === 'm' ? ' m' : '')
   if (w) return w
-  if (work) return timed ? work : work + ' ' + t('reps')
+  if (work) return timed ? work : work + ' ' + repWord
   return ''
 }
 
@@ -55,7 +56,8 @@ function* undoneRows(active) {
 
 function describe(hit, { unit, speedUnit, nameOf }) {
   const { s, side, entry } = hit
-  const text = loadText(modeOf(cfgOf(entry)), valuesOf(hit), unit, speedUnit)
+  const cfg = cfgOf(entry)
+  const text = loadText(modeOf(cfg), valuesOf(hit), unit, speedUnit, repWordOf(cfg, t('reps')))
   const setLabel = t('Set {0}', s + 1 + '/' + (entry.sets || []).length) + (side ? ' · ' + side : '')
   return { title: nameOf(entry.id), setLabel, detail: setLabel + (text ? ' · ' + text : '') }
 }
@@ -95,7 +97,7 @@ function fieldsFor({ entry, row, side }, { unit, speedUnit }) {
     return [{ k: 'sec', v: v.sec, step: 5, u: 's' }, ...(bw && !added ? [] : [weight])]
   }
   if (!(v.r > 0)) return null
-  const reps = { k: 'r', v: v.r, step: side ? 1 : repStep(cfg), u: t('reps') }
+  const reps = { k: 'r', v: v.r, step: side ? 1 : repStep(cfg), u: repWordOf(cfg, t('reps')) }
   return bw && !added ? [reps] : [weight, reps]
 }
 

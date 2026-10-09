@@ -35,6 +35,7 @@ import { normalizeRepRange } from './lib/rep-range.js'
 import { MOBILE, shareExport, printHtml } from './lib/mobile.js'
 import { speedUnitOf, toSpeed, fromSpeed } from './lib/speed.js'
 import { buildCompletedWorkout } from './lib/finish-workout.js'
+import { DISTANCE_STEP, repUnitOf } from './lib/functional.js'
 import { saveWorkoutToHealth } from './lib/health.js'
 import { isWarmupRow, hasCompletedWork } from './lib/workout-model.js'
 import { saveSessionAsRoutine } from './lib/session-routines.js'
@@ -1381,6 +1382,8 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
   // Both default from the dataset and are then whatever the config says — see isBw.
   const bw = !cardio && isBw({ ...c, id: ex.id })
   const perSide = isPerSide(c)
+  // Loaded carries, sled work and rucking count metres where reps go (lib/functional.js).
+  const distance = mode === 'reps' && repUnitOf({ ...c, id: ex.id }) === 'm'
   const progressionPolicy = policyFor({ ...c, id: ex.id }, routine, mode)
   const progressionStepInvalid = !progressionStepIsValid(progressionStepOf(c, mode, ex, st.unit), progressionPolicy)
   const activePolicy = policyFor({ ...c, id: ex.id }, routine, mode)
@@ -1441,7 +1444,9 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
         range = normalizeRepRange(reps, c.repsMin, stride)
         reps = range.reps
       }
-      const out = { sets, mode: 'reps', reps, weight: Math.max(0, c.weight || 0), ...flags, ...(perSide ? { side: true } : {}), ...prog, ...withNote, ...withWarmups, ...withRest }
+      // Written only when it differs from what the exercise's name already says, like `bodyweight`.
+      const unitFlag = distance !== (repUnitOf({ id: ex.id }) === 'm') ? { repUnit: distance ? 'm' : 'reps' } : {}
+      const out = { sets, mode: 'reps', reps, weight: Math.max(0, c.weight || 0), ...flags, ...unitFlag, ...(perSide ? { side: true } : {}), ...prog, ...withNote, ...withWarmups, ...withRest }
       if (double) out.repsMin = range.repsMin
       // A ceiling below the working reps would tell you to add a set on day one.
       if (bw && !(out.weight > 0) && c.repsMax > 0) out.repsMax = Math.max(reps, Math.round(c.repsMax))
@@ -1488,7 +1493,7 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
             rest-pause work set — so "Sets" has nothing left to mean and only invites a mismatch. */}
         {c.intensifier?.type !== 'restpause' &&
           <Stepper label={t('Sets')} value={c.sets} step={1} decimal={false} onChange={v => setC(x => ({ ...x, sets: v }))} />}
-        {!double && <Stepper label={t('Reps')} value={c.reps} step={perSide ? 2 : 1} decimal={false} onChange={v => setC(x => ({ ...x, reps: v }))} />}
+        {!double && <Stepper label={distance ? t('Distance (m)') : t('Reps')} value={c.reps} step={perSide ? 2 : distance ? DISTANCE_STEP : 1} decimal={false} onChange={v => setC(x => ({ ...x, reps: v }))} />}
         {/* On bodyweight work the weight stepper is the click #32 is about, so it is not here
             until there is a belt to describe — see the added-weight row below. */}
         {!bw && <Stepper label={t('Weight ({0})', st.unit)} value={c.weight} step={2.5} onChange={v => setC(x => ({ ...x, weight: v }))} />}
@@ -1540,6 +1545,10 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
             ? { ...next, ...normalizeRepRange(next.reps, next.repsMin, v ? 2 : 1) }
             : next
         })} />
+      </Row>}
+      {mode === 'reps' && <Row icon="flag" iconTint="var(--orange)" title={t('Distance instead of reps')}
+        subtitle={distance ? t('You log metres, not reps.') : t('For farmers walks, sled pushes and carries.')}>
+        <Switch checked={distance} onChange={v => setC(x => ({ ...x, repUnit: v ? 'm' : 'reps' }))} />
       </Row>}
     </div>}
     {/* A stepper is too wide to sit in a list row next to a label — it squeezes the text to

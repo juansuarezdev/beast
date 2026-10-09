@@ -11,7 +11,7 @@ const sign = d => (d > 0 ? '+' : '−')
 
 // `ref` and `cur` are plain set rows ({ w, r } | { sec, w } | { min, speed }). null when there is
 // nothing to hold the row against or a field it needs is missing.
-export function compareSetTo(ref, cur, mode, { unit = 'kg', speedUnit = 'kmh' } = {}) {
+export function compareSetTo(ref, cur, mode, { unit = 'kg', speedUnit = 'kmh', repWord } = {}) {
   if (!ref || !cur) return null
   const step = (a, b, text) => (a === b ? null : { dir: a > b ? 'up' : 'down', text: sign(a - b) + text(Math.abs(a - b)) })
   let hit = null
@@ -24,7 +24,7 @@ export function compareSetTo(ref, cur, mode, { unit = 'kg', speedUnit = 'kmh' } 
     hit = step(cur.w || 0, ref.w || 0, d => ' ' + num(d) + ' ' + unit) || step(cur.sec, ref.sec, d => ' ' + num(d) + 's')
   } else {
     if (!(cur.r > 0) || !(ref.r > 0)) return null
-    hit = step(cur.w || 0, ref.w || 0, d => ' ' + num(d) + ' ' + unit) || step(cur.r, ref.r, d => ' ' + num(d) + ' ' + t('reps'))
+    hit = step(cur.w || 0, ref.w || 0, d => ' ' + num(d) + ' ' + unit) || step(cur.r, ref.r, d => ' ' + num(d) + ' ' + (repWord || t('reps')))
   }
   return hit ? { dir: hit.dir, text: hit.text.replace(/^([+−])\s+/, '$1') } : { dir: 'same', text: '=' }
 }

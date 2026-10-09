@@ -433,6 +433,10 @@ export default function Settings() {
         subtitle={t('Longer rest after heavy low-rep sets and sets to failure, shorter after light high-rep ones. An exercise with its own rest time keeps it.')}>
         <Switch checked={!!S.smartRest} onChange={v => update(s => { s.smartRest = v })} />
       </Row>
+      {/* A weekly target for cardio minutes; the Home screen shows the week against it. */}
+      <SelectRow icon="bike" iconTint="var(--blue)" title={t('Weekly cardio goal')}
+        value={String(S.cardioGoalMin || 0)} onChange={v => update(s => { s.cardioGoalMin = parseInt(v, 10) || 0 })}
+        options={[0, 60, 90, 120, 150, 180, 240, 300].map(m => ({ value: String(m), label: m ? m + ' min' : t('Off') }))} />
       {/* Whose reps a planned session opens with (lib/session-start.js). The plan's by default:
           the routine is what you said you would do, and history and progression decide the
           weight. The other choice is the old behaviour, reps carried over from last time.

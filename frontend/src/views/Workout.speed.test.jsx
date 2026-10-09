@@ -12,7 +12,7 @@ vi.mock('../lib/sound.js', () => ({ beep: vi.fn(), vibrate: vi.fn(), unlock: vi.
 vi.mock('../lib/api.js', () => ({ api: vi.fn(() => Promise.resolve({})) }))
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
-const BIKE = '2138'   // stationary bike, cardio
+const BIKE = '2612'   // jump rope: cardio with no sport, so it keeps the minutes-and-speed columns
 let root, container
 
 function mount(settings = {}) {

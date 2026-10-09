@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import { effectiveRoutines, effectiveRoutineIds, nextTrainingDay, streakWeeks, lastBW, setsDoneActive } from '../lib/history.js'
+import { cardioWeek, goalShare } from '../lib/cardio-week.js'
+import { EXIDX } from '../lib/exercises.js'
+import { speedUnitOf } from '../lib/speed.js'
 import { fmtNum, fmtDate, todayISO, isoOf, weekKey, weekStartOf, weekDayOffset, DAYS, DAYN } from '../lib/format.js'
 import { t, dateLocale } from '../lib/i18n.js'
 import { bwSheet, goalSheet, dayOverrideSheet, calendarSheet, startFlow, starterPlanSheet, bwDeltaColor, weighInsSheet } from '../sheets.jsx'
@@ -141,6 +144,23 @@ export default function Home() {
         <div style={{ height: 8 }} /><Button onClick={() => nav('/plan')}>{t('Build my own plan')}</Button>
       </div>
     )}
+
+    {S.cardioGoalMin > 0 && (() => {
+      // Minutes of ticked cardio this week against the goal set in Settings (lib/cardio-week.js).
+      const cw = cardioWeek(S.workouts, todayISO(), ws, id => EXIDX[id]?.n || '')
+      const miles = speedUnitOf(S) === 'mph'
+      return <div className="card">
+        <div className="row between">
+          <h2 style={{ margin: 0 }}>{t('Cardio this week')}</h2>
+          <span className="muted small">{t('{0} of {1} min', fmtNum(Math.round(cw.minutes)), S.cardioGoalMin)}</span>
+        </div>
+        <div role="progressbar" aria-valuemin={0} aria-valuemax={S.cardioGoalMin} aria-valuenow={Math.round(cw.minutes)}
+          style={{ height: 8, borderRadius: 4, background: 'rgba(127,127,127,.25)', marginTop: 10, overflow: 'hidden' }}>
+          <div style={{ width: goalShare(cw.minutes, S.cardioGoalMin) * 100 + '%', height: '100%', background: 'var(--acc)' }} />
+        </div>
+        {cw.km > 0 && <div className="muted small" style={{ marginTop: 8 }}>{fmtNum(miles ? cw.km / 1.609344 : cw.km)} {miles ? 'mi' : 'km'}</div>}
+      </div>
+    })()}
 
     {S.showWeightCard !== false && <div className="card">
       <div className="row between bw-head" style={{ marginBottom: 6 }}>

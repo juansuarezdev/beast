@@ -95,6 +95,13 @@ describe('upcomingSets', () => {
     expect(upcomingSets(bwPlank, opts)[0].fields.map(f => f.k)).toEqual(['sec'])
   })
 
+  it('counts a carry or a sled push in metres, in steps of five', () => {
+    const carry = { cur: 0, entries: [{ id: 'bx-sled-push', sets: [set({ w: 60, r: 20 })] }] }
+    const [item] = upcomingSets(carry, opts)
+    expect(item.detail).toBe('Set 1/1 · 60 kg × 20 m')
+    expect(item.fields.find(f => f.k === 'r')).toEqual({ k: 'r', v: 20, step: 5, u: 'm' })
+  })
+
   it('gives cardio minutes and speed, the speed in the profile unit', () => {
     const run = { cur: 0, entries: [{ id: 'run', target: { mode: 'cardio' }, sets: [{ min: 20, speed: 8, done: false }] }] }
     expect(upcomingSets(run, opts)[0].fields).toEqual([

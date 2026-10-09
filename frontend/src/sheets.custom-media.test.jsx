@@ -57,7 +57,7 @@ async function pick(form, file = new File(['x'], 'IMG_0042.HEIC', { type: 'image
   while (busy() && Date.now() < end) await act(async () => { await new Promise(r => setTimeout(r, 10)) })
   await settle()
 }
-const custom = (over = {}) => ({ id: 'cm1', n: 'Sandbag carry', bp: 'back', eq: 'barbell', custom: true, desc: '', tg: '', sm: [], primaries: [], secondaries: [], muscleGroups: [], ...over })
+const custom = (over = {}) => ({ id: 'cm1', n: 'Zercher carry', bp: 'back', eq: 'barbell', custom: true, desc: '', tg: '', sm: [], primaries: [], secondaries: [], muscleGroups: [], ...over })
 function seed(ex) {
   useStore.setState(s => ({ S: { ...s.S, customEx: [ex] } }))
   registerCustom([ex])
@@ -95,7 +95,7 @@ describe('custom exercise photo, GIF or video, and link', () => {
   it('a picked file shows in the form, and Create saves its ref and the cleaned link — never the file name', async () => {
     customExSheet(null)
     const form = renderTop()
-    act(() => type(form.querySelector('input.input'), 'Sandbag carry'))
+    act(() => type(form.querySelector('input.input'), 'Zercher carry'))
     click(form, '.chip', 'back')
     click(form, '.chip', 'barbell')
     await pick(form)
@@ -107,7 +107,7 @@ describe('custom exercise photo, GIF or video, and link', () => {
     expect([...media.pendingNow()].sort()).toEqual([HASH, POSTER])
     act(() => type(form.querySelector('input[type="url"]'), '  youtu.be/dQw4w9WgXcQ '))
     click(form, 'button', 'Create exercise')
-    const c = S().customEx.find(x => x.n === 'Sandbag carry')
+    const c = S().customEx.find(x => x.n === 'Zercher carry')
     expect(c.media).toEqual(REF)
     expect(c.url).toBe('https://youtu.be/dQw4w9WgXcQ')
     expect(JSON.stringify(S())).not.toContain('IMG_0042')
@@ -150,10 +150,10 @@ describe('custom exercise photo, GIF or video, and link', () => {
     seed(custom({ media: REF, url: 'https://exrx.net/a' }))
     customExSheet(S().customEx[0])
     const form = renderTop()
-    act(() => type(form.querySelector('input.input'), 'Sandbag carry, heavy'))
+    act(() => type(form.querySelector('input.input'), 'Zercher carry, heavy'))
     act(() => type(form.querySelector('input[type="url"]'), ''))
     click(form, 'button', 'Save')
-    expect(S().customEx[0]).toMatchObject({ n: 'Sandbag carry, heavy', media: REF })
+    expect(S().customEx[0]).toMatchObject({ n: 'Zercher carry, heavy', media: REF })
     expect(S().customEx[0].url).toBeUndefined()
   })
 
@@ -162,9 +162,9 @@ describe('custom exercise photo, GIF or video, and link', () => {
     seed(custom({ media: future }))
     customExSheet(S().customEx[0])
     const form = renderTop()
-    act(() => type(form.querySelector('input.input'), 'Sandbag carry, renamed'))
+    act(() => type(form.querySelector('input.input'), 'Zercher carry, renamed'))
     click(form, 'button', 'Save')
-    expect(S().customEx[0]).toMatchObject({ n: 'Sandbag carry, renamed', media: future })
+    expect(S().customEx[0]).toMatchObject({ n: 'Zercher carry, renamed', media: future })
   })
 
   it('a refused file becomes the sentence for it, and the draft stays as it was', async () => {

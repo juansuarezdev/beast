@@ -11,6 +11,8 @@ import { compareSetTo, smartRestForSet } from '../lib/set-compare.js'
 import { effectiveRoutines, effectiveRoutineIds, lastEntryFor, bestWeightFor, bestWeightForEntry, buildSets, freestyleConfig, defaultConfig, setsDoneActive, setUnitsTotal, supersetUnits, unitOf, setLabel, modeOf, isBw, isPerSide, repStep, EFFORT, effortOf, stepEffort, capEffort, cascadeWeight, insertWarmupRow, removeRowAt, pairAdjacent, unpairSuperset, cleanupSg, applyIntensifierPlan, pinnedNoteFor, exNoteFor, setsRepsOf } from '../lib/history.js'
 import { fmtNum, fmtPlate, exerciseNameText, fmtDate, todayISO, exCount, DAYN } from '../lib/format.js'
 import { speedUnitOf, toSpeed, fromSpeed } from '../lib/speed.js'
+import { cardioKindFromName, distanceKmOf, distanceStep, distanceUnit, fromKm, paceText, toKm, withDistanceKm, withMinutes } from '../lib/cardio.js'
+import { repUnitOf } from '../lib/functional.js'
 import { beep, vibrate, unlock } from '../lib/sound.js'
 import { t, exerciseNameFor, exerciseNameClass } from '../lib/i18n.js'
 import { api, beacon } from '../lib/api.js'
@@ -236,15 +238,24 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   const loadCol = { f: 'w', step: loadStep, dec: true, hd: bw ? t('Added ({0})', S.unit) : t('Weight ({0})', S.unit) }
   // The reps column is the total in every mode, unilateral included — the stepper walks in
   // twos there so the number you land on is one you can actually split evenly.
-  const repCol = { f: 'r', step: repStep(cfg), dec: false, hd: t('Reps') }
+  const repCol = { f: 'r', step: repStep(cfg), dec: false, hd: mode === 'reps' && repUnitOf(cfg) === 'm' ? t('Distance (m)') : t('Reps') }
   const col1 = cardio ? { f: 'min', step: 1, dec: false, hd: t('Duration (min)') }
     : timed ? { f: 'sec', step: 5, dec: false, hd: t('Seconds') }
       : (bw && !added) ? repCol : loadCol
   // Speed is stored in km/h and shown in the profile's unit (lib/speed.js): `view` turns the
   // stored number into the one on screen, `store` the one typed or stepped back into km/h.
   const speedUnit = speedUnitOf(S)
-  const col2 = cardio ? { f: 'speed', step: 0.5, dec: true, hd: speedUnit === 'mph' ? t('Speed (mph)') : t('Speed (km/h)'),
-    view: v => toSpeed(v, speedUnit), store: v => fromSpeed(v, speedUnit) }
+  // A run, a ride, a row or a swim is logged by distance (lib/cardio.js): minutes plus a distance in
+  // the unit of the sport, with the pace shown under the row. The speed stays what is stored.
+  const cardioKind = cardio ? cardioKindFromName(ex.n) : null
+  const distCol = cardioKind ? {
+    f: 'dist', step: distanceStep(cardioKind, speedUnit), dec: true,
+    hd: t('Distance ({0})', distanceUnit(cardioKind, speedUnit)),
+    read: row => fromKm(distanceKmOf(row), cardioKind, speedUnit),
+    store: v => toKm(v, cardioKind, speedUnit),
+  } : null
+  const col2 = cardio ? (distCol || { f: 'speed', step: 0.5, dec: true, hd: speedUnit === 'mph' ? t('Speed (mph)') : t('Speed (km/h)'),
+    view: v => toSpeed(v, speedUnit), store: v => fromSpeed(v, speedUnit) })
     : timed ? ((bw && !added) ? null : loadCol)
       : (bw && !added) ? null : repCol
   // Effort (RIR or RPE, whichever the profile logs) only makes sense for weighted rep sets,
@@ -264,7 +275,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
     // with a fresh clone before the next tap fires. Reading from the store avoids that stale-
     // closure problem entirely and keeps every tap operating on the real current value.
     const fresh = useStore.getState().S.active?.entries[entryIdx]?.sets[i]
-    const cur = fresh ? fresh[col.f] : s[col.f]
+    const cur = col.read ? col.read(fresh || s) : (fresh ? fresh[col.f] : s[col.f])
     if (mode === 'reps' && col.f === 'w') return onField(i, col.f, stepWeight(cur, col.step, dir))
     // The step is in the unit on screen: +0.5 mph, not +0.5 km/h shown as +0.31.
     const next = Math.max(0, Math.round(((viewOf(col, cur) || 0) + dir * col.step) * 100) / 100)
@@ -279,7 +290,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   const cell = (s, i, col, cls) => (
     <div className={'stp ' + cls + (wc.steppers ? '' : ' plain')}>
       {wc.steppers && <button aria-label={t('Decrease')} onClick={() => bump(s, i, col, -1)}><Icon name="minus" /></button>}
-      <span className="val"><NumberField decimal={col.dec} nullable={col.opt} value={viewOf(col, s[col.f]) ?? ''}
+      <span className="val"><NumberField decimal={col.dec} nullable={col.opt} value={(col.read ? col.read(s) : viewOf(col, s[col.f])) ?? ''}
         onChange={v => onField(i, col.f, col.store ? col.store(v) : v)} /></span>
       {wc.steppers && <button aria-label={t('Increase')} onClick={() => bump(s, i, col, 1)}><Icon name="plus" /></button>}
     </div>
@@ -348,8 +359,13 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
     if (dense || editing || !s.done || isWarmupRow(s) || isSideSet(s) || !refWork.length) return null
     const k = entry.sets.slice(0, i + 1).filter(x => !isWarmupRow(x)).length - 1
     const against = refBest ? refWork[0] : (refWork[k] || refWork[refWork.length - 1])
-    const d = compareSetTo(against, s, mode, { unit: S.unit, speedUnit })
+    const d = compareSetTo(against, s, mode, { unit: S.unit, speedUnit, repWord: mode === 'reps' && repUnitOf(cfg) === 'm' ? 'm' : undefined })
     return d ? <div className={'setdelta ' + d.dir}>{d.dir === 'up' ? '▲ ' : d.dir === 'down' ? '▼ ' : ''}{d.text}</div> : null
+  }
+  // The pace of a run, ride, row or swim, live as the numbers are typed: "6:00 /km", "2:05 /500 m".
+  const paceLine = s => {
+    const pace = cardioKind && !dense ? paceText(cardioKind, s.speed, speedUnit) : ''
+    return pace ? <div className="setdelta same">{pace}</div> : null
   }
   // Everything about this exercise that is not a set you are logging right now lives behind one
   // button. What used to be a row of buttons in the header, a chip under the bar, a strip of
@@ -615,6 +631,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
           </div>
           )}
           {loadLine(String(i))}
+          {paceLine(s)}
           {deltaLine(s, i)}
           {/* Drop-sets and rest-pause bursts extend this same row — no long rest, no new set.
               A planned exercise arrives with these already filled in (applyIntensifierPlan);
@@ -793,7 +810,14 @@ function ActiveWorkout() {
   // Clearing an optional field drops the key rather than storing null, so a set only carries
   // what was actually logged — in the session, in history and in a backup.
   const setField = (idx, i, field, v) => mutEntry(idx, e => {
-    if (v == null) delete e.sets[i][field]; else e.sets[i][field] = v
+    // Minutes and distance keep the stored speed in step (lib/cardio.js), so the pace, the charts
+    // and every older reader stay consistent with what is on screen. Done from the row as it was,
+    // before the new number goes in.
+    const sport = cardioKindFromName(exOr(e.id).n)
+    if (sport && v != null && field === 'dist') e.sets[i] = withDistanceKm(e.sets[i], v)
+    else if (sport && v != null && field === 'min') e.sets[i] = withMinutes(e.sets[i], v)
+    else if (v == null) delete e.sets[i][field]
+    else e.sets[i][field] = v
     // Typing a duration IS the new plan, the same way ticking the row ends it: a plan a displaced
     // hold put aside must not outrank what you just typed, or the field would read 45 and the ▶
     // would still hold the 30 the row was asking for before.
