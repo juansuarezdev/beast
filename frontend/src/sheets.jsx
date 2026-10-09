@@ -37,6 +37,7 @@ import { speedUnitOf, toSpeed, fromSpeed } from './lib/speed.js'
 import { buildCompletedWorkout } from './lib/finish-workout.js'
 import { DISTANCE_STEP, repUnitOf } from './lib/functional.js'
 import { percentTable, repRecords } from './lib/records.js'
+import { BACKOFF_DEFAULT_PCT, cleanBackoff } from './lib/topset.js'
 import { saveWorkoutToHealth } from './lib/health.js'
 import { isWarmupRow, hasCompletedWork } from './lib/workout-model.js'
 import { saveSessionAsRoutine } from './lib/session-routines.js'
@@ -1413,6 +1414,10 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
   const perSide = isPerSide(c)
   // Loaded carries, sled work and rucking count metres where reps go (lib/functional.js).
   const distance = mode === 'reps' && repUnitOf({ ...c, id: ex.id }) === 'm'
+  // A top set with back-off sets (lib/topset.js): the first set decides progression, the others follow it
+  // at a percentage of its weight for more reps. Needs two or more sets of loaded reps, not per side.
+  const canBackoff = mode === 'reps' && !perSide && (Number(c.sets) || 0) >= 2
+  const backoff = canBackoff ? c.backoff : undefined
   const progressionPolicy = policyFor({ ...c, id: ex.id }, routine, mode)
   const progressionStepInvalid = !progressionStepIsValid(progressionStepOf(c, mode, ex, st.unit), progressionPolicy)
   const activePolicy = policyFor({ ...c, id: ex.id }, routine, mode)
@@ -1477,7 +1482,8 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
       }
       // Written only when it differs from what the exercise's name already says, like `bodyweight`.
       const unitFlag = distance !== (repUnitOf({ id: ex.id }) === 'm') ? { repUnit: distance ? 'm' : 'reps' } : {}
-      const out = { sets, mode: 'reps', reps, weight: Math.max(0, c.weight || 0), ...flags, ...unitFlag, ...(perSide ? { side: true } : {}), ...prog, ...withNote, ...withWarmups, ...withRest }
+      const bo = canBackoff && sets >= 2 ? cleanBackoff(c.backoff) : null
+      const out = { sets, mode: 'reps', reps, weight: Math.max(0, c.weight || 0), ...flags, ...unitFlag, ...(bo ? { backoff: bo } : {}), ...(perSide ? { side: true } : {}), ...prog, ...withNote, ...withWarmups, ...withRest }
       if (double) out.repsMin = range.repsMin
       // A ceiling below the working reps would tell you to add a set on day one.
       if (bw && !(out.weight > 0) && c.repsMax > 0) out.repsMax = Math.max(reps, Math.round(c.repsMax))
@@ -1581,6 +1587,18 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
         subtitle={distance ? t('You log metres, not reps.') : t('For farmers walks, sled pushes and carries.')}>
         <Switch checked={distance} onChange={v => setC(x => ({ ...x, repUnit: v ? 'm' : 'reps' }))} />
       </Row>}
+      {canBackoff && <Row icon="arrowDown" iconTint="var(--orange)" title={t('Top set + back-off')}
+        subtitle={backoff ? t('The first set is the heavy one and decides progression; the rest follow it at a lower weight.') : t('One heavy set, then lighter ones for more reps.')}>
+        <Switch checked={!!backoff} onChange={v => setC(x => ({ ...x, backoff: v ? { pct: BACKOFF_DEFAULT_PCT, repsMin: 10, reps: 12 } : undefined }))} />
+      </Row>}
+    </div>}
+    {backoff && <div className="row cfgrow" style={{ marginBottom: 8, flexWrap: 'wrap' }}>
+      <Stepper label={t('Back-off weight (% of the top set)')} value={backoff.pct ?? BACKOFF_DEFAULT_PCT} step={5} min={50} max={95} decimal={false}
+        onChange={v => setC(x => ({ ...x, backoff: { ...x.backoff, pct: v } }))} />
+      <Stepper label={t('Back-off reps from')} value={backoff.repsMin ?? backoff.reps} step={1} min={1} max={15} decimal={false}
+        onChange={v => setC(x => ({ ...x, backoff: { ...x.backoff, repsMin: v } }))} />
+      <Stepper label={t('Back-off reps up to')} value={backoff.reps} step={1} min={1} max={15} decimal={false}
+        onChange={v => setC(x => ({ ...x, backoff: { ...x.backoff, reps: v } }))} />
     </div>}
     {/* A stepper is too wide to sit in a list row next to a label — it squeezes the text to
         one word per line — so added weight gets the same full-width treatment as sets and

@@ -2,6 +2,7 @@
 import { todayISO, isoOf, weekKey, weekStartOf, fmtNum } from './format.js'
 import { fmtSpeed } from './speed.js'
 import { repUnitOf, DISTANCE_STEP } from './functional.js'
+import { backoffOf, withBackoff } from './topset.js'
 import { cardioKindFromName, distanceKmOf, distanceUnit, fromKm, paceText } from './cardio.js'
 import { EXIDX, isCardio, isBodyweightEq, isAssisted, betterWeight } from './exercises.js'
 import { phaseForSet, modeForSet, modeForEntry, isWarmupRow, normalizeMode, completedVolumeOf, hasCompletedWork, nextDropWeight, splitBurstReps, makeSideSet, isSideSet, syncSideAggregate, WEIGHT_ORIGIN_MANUAL, dropsOf, clustersOf } from './workout-model.js'
@@ -191,6 +192,12 @@ const repsOf = (cfg, fmt = v => String(v)) => (hasRange(cfg) ? `${fmt(cfg.repsMi
 export function setsRepsOf(cfg) {
   const mode = modeOf(cfg)
   const n = cfg.sets || 1
+  // A top set with back-off sets reads as both: "1 × 6–10 + 2 × 10–14".
+  const bo = mode === 'reps' ? backoffOf(cfg) : null
+  if (bo) {
+    const range = bo.repsMin < bo.reps ? `${bo.repsMin}–${bo.reps}` : String(bo.reps)
+    return `1 × ${repsOf(cfg)}${repUnitOf(cfg) === 'm' ? ' m' : ''} + ${n - 1} × ${range}`
+  }
   if (mode === 'cardio') return `${n} × ${cfg.min || 20} min`
   if (mode === 'time') return `${n} × ${fmtSec(cfg.sec || 45)}`
   return `${n} × ${repsOf(cfg)}${repUnitOf(cfg) === 'm' ? ' m' : ''}`
@@ -457,11 +464,11 @@ export function nextTrainingDay(S, iso) {
 export function buildSets(S, cfg, options = {}) {
   const rows = buildWorkSets(S, cfg, options)
   const warm = Math.max(0, Math.min(MAX_PLANNED_WARMUPS, Math.round(cfg.warmupSets) || 0))
-  if (!warm) return rows
+  if (!warm) return withBackoff(rows, cfg, options.step)
   const mode = modeOf(cfg)
   let out = rows
   for (let i = 0; i < warm; i++) out = insertWarmupRow(out, mode, cfg, options.step)
-  return out
+  return withBackoff(out, cfg, options.step)
 }
 
 /** Beyond this a "warm-up" is its own workout; the config stepper stops here too. */

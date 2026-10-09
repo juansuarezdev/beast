@@ -1704,4 +1704,11 @@ export default {
   'RPE {0} is on target — same weight again.': 'RPE {0} in linea — stesso peso.',
   'RPE {0} was harder than the {1} aimed for — same weight again.': 'RPE {0} è stato più duro del {1} previsto — stesso peso.',
   'Animations in list view': 'Animazioni nella vista a elenco',
+  'Back-off': 'Back-off',
+  'Top set + back-off': 'Top set + back-off',
+  'The first set is the heavy one and decides progression; the rest follow it at a lower weight.': 'La prima serie è quella pesante e decide la progressione; le altre la seguono con meno peso.',
+  'One heavy set, then lighter ones for more reps.': 'Una serie pesante, poi altre più leggere con più ripetizioni.',
+  'Back-off weight (% of the top set)': 'Peso del back-off (% del top set)',
+  'Back-off reps from': 'Ripetizioni del back-off da',
+  'Back-off reps up to': 'Ripetizioni del back-off fino a',
 }

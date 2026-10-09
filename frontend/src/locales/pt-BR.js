@@ -1029,6 +1029,8 @@ export const PT_BR_OVERRIDES = {
   'RPE {0} is on target — same weight again.': 'RPE {0} na meta — mesmo peso de novo.',
   'RPE {0} was harder than the {1} aimed for — same weight again.': 'RPE {0} foi mais difícil que o {1} previsto — mesmo peso de novo.',
   'Target effort (RPE)': 'Esforço-alvo (RPE)',
+  'The first set is the heavy one and decides progression; the rest follow it at a lower weight.': 'A primeira série é a pesada e decide a progressão; as demais a seguem com menos peso.',
+  'Back-off reps from': 'Repetições do back-off a partir de',
 }
 
 export default { ...pt, ...PT_BR_OVERRIDES }

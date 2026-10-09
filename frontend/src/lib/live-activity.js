@@ -8,6 +8,7 @@ import { bestWeightForEntry, cascadeWeight, doneUnits, isBw, modeOf, repStep, se
 import { weightIncrement } from './progression.js'
 import { repWordOf } from './functional.js'
 import { fromSpeed, toSpeed } from './speed.js'
+import { backoffOf, topIndex, withBackoff } from './topset.js'
 import { WEIGHT_ORIGIN_MANUAL, isSideSet, setSideField, toggleSide } from './workout-model.js'
 
 const num = n => (Number.isInteger(n) ? String(n) : String(Math.round(n * 100) / 100))
@@ -144,6 +145,10 @@ export function completeSetFromLock(S, e, s, { side = '', fields = [], speedUnit
       row = side ? setSideField(row, side, 'weightOrigin', WEIGHT_ORIGIN_MANUAL) : { ...row, weightOrigin: WEIGHT_ORIGIN_MANUAL }
       entry.sets[s] = row
       entry.sets = cascadeWeight(entry.sets, s, value, side || undefined)
+      // A top set with back-off sets: the others follow it at their percentage, not at its weight.
+      if (!side && s === topIndex(entry.sets) && backoffOf(entry.target)) {
+        entry.sets = withBackoff(entry.sets, cfgOf(entry), weightIncrement(cfgOf(entry), S.unit))
+      }
       row = entry.sets[s]
     }
   }

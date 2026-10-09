@@ -1776,6 +1776,31 @@ describe('workout controls: the more menu and the set menu', () => {
     expect(sets[4]).toMatchObject({ w: 60, done: false })
   })
 
+  it('names the top set and the back-off sets, and works the back-off weights from the top set when it changes', async () => {
+    const bo = { pct: 85, repsMin: 10, reps: 12 }
+    await mount([exercise('plain-bench', [false, false, false], {
+      target: { mode: 'reps', sets: 3, reps: 8, repsMin: 6, weight: 60, bodyweight: false, backoff: bo },
+      sets: [{ w: 60, r: 8, done: false }, { w: 50, r: 11, done: false }, { w: 50, r: 11, done: false }],
+    })])
+    const heads = [...container.querySelectorAll('.setph')].map(x => x.textContent.trim())
+    expect(heads).toEqual(['Top set', 'Back-off'])
+
+    const firstRow = container.querySelector('.setrow')
+    await act(async () => { firstRow.querySelector('.stp button[aria-label="Increase"]').dispatchEvent(new dom.Event('click', { bubbles: true })) })
+    await rerender()
+    const ws = mocks.S.active.entries[0].sets.map(x => x.w)
+    expect(ws[0]).toBeGreaterThan(60)
+    expect(ws[1]).toBeLessThan(ws[0])
+    expect(ws[1]).toBe(ws[2])
+    // not the top weight copied onto the others, which is what a plain exercise does
+    expect(ws[1]).not.toBe(ws[0])
+  })
+
+  it('shows nothing of the kind for an exercise without the plan', async () => {
+    await mount([exercise('plain-bench', [false, false])])
+    expect(container.querySelectorAll('.setph')).toHaveLength(0)
+  })
+
   it('shows how a done set moved against the same set last time', async () => {
     const past = { id: 'p0', d: '2026-09-20', start: 1, end: 2, name: 'Push', entries: [exercise('plain-bench', [true, true])] }
     await mount([exercise('plain-bench', [true, true, false], { sets: [{ w: 62.5, r: 5, done: true }, { w: 60, r: 6, done: true }, { w: 60, r: 5, done: false }] })], 0, { workouts: [past] })

@@ -20,6 +20,7 @@ import { modeOf, repStep, rerampWarmups, isBw, isPerSide, entryExcluded, entryRo
 import { EXIDX, isAssisted, isLoadedEq } from './exercises.js'
 import { isWarmupRow, isSideSet, syncSideAggregate, makeSideSet } from './workout-model.js'
 import { normalizeRepRange } from './rep-range.js'
+import { backoffOf } from './topset.js'
 
 export const POLICIES = ['off', 'linear', 'greyskull', 'double', 'rpe', 'time']
 
@@ -228,6 +229,8 @@ export function plannedOf(cfg) {
   if (mode === 'reps' && c.repsMin > 0) out.repsMin = c.repsMin
   if (mode === 'time' && c.sec > 0) out.sec = c.sec
   if (c.weight != null) out.weight = c.weight
+  const bo = mode === 'reps' ? backoffOf(c) : null
+  if (bo) out.bo = `${bo.pct}:${bo.repsMin}:${bo.reps}`
   return out
 }
 // Work with no load to enter climbs in reps, then sets, when it is logged at 0: a bodyweight
@@ -237,7 +240,7 @@ export function plannedOf(cfg) {
 // progression leads (issue #232), and from there the work is a plain pull-up or dip.
 const climbsReps = cfg => isBw(cfg) || !isLoadedEq(cfg.id) || isAssisted(cfg)
 
-const PLAN_KEYS = ['sets', 'reps', 'repsMin', 'sec']
+const PLAN_KEYS = ['sets', 'reps', 'repsMin', 'sec', 'bo']
 const samePlan = (a, b) => PLAN_KEYS.every(k => (a[k] ?? null) === (b[k] ?? null))
 /** Did the routine's sets or reps change since the session that stamped `planned`? */
 export function planChanged(planned, cfg) {
@@ -290,10 +293,14 @@ export function readSession(entry, fallback) {
     }
   }
   const goal = target.reps || 0
-  const reps = sets.map(s => (s.done ? (s.r || 0) : 0))
-  // The effort the lifter rated, as RPE (a RIR of 2 is an RPE of 8), averaged over the sets they
-  // rated. Left out of the read when none was rated, so a session without effort reads as before.
-  const efforts = sets.filter(s => s.done).map(s => (s.rpe != null ? Number(s.rpe) : s.rir != null ? 10 - Number(s.rir) : null)).filter(n => Number.isFinite(n))
+  // With a top set and back-off sets the top set alone decides: the back-off sets are lighter and for
+  // more reps, so reading them against the top set's reps would call every session a miss (or a hit
+  // for the wrong reason). The session still has to be finished (`enough` counts every set).
+  const judged = backoffOf(target) ? sets.slice(0, 1) : sets
+  const reps = judged.map(s => (s.done ? (s.r || 0) : 0))
+  // The effort the lifter rated, as RPE (a RIR of 2 is an RPE of 8), averaged over the sets that
+  // decide (the top set alone when there are back-off sets). Left out of the read when none was rated, so a session without effort reads as before.
+  const efforts = judged.filter(s => s.done).map(s => (s.rpe != null ? Number(s.rpe) : s.rir != null ? 10 - Number(s.rir) : null)).filter(n => Number.isFinite(n))
   return {
     mode, target, goal, reps,
     ...(efforts.length ? { rpe: efforts.reduce((a, b) => a + b, 0) / efforts.length } : {}),

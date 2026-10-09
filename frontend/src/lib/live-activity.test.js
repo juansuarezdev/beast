@@ -206,6 +206,17 @@ describe('completeSetFromLock', () => {
     expect([b.w, c.w, b.r]).toEqual([65, 65, 8])
   })
 
+  it('works the back-off sets out from the top set when its weight is changed', () => {
+    const bo = { pct: 85, repsMin: 10, reps: 12 }
+    const S = { unit: 'kg', active: { cur: 0, entries: [{ id: 'bench', target: { sets: 3, reps: 8, backoff: bo }, sets: [set({ w: 100 }), set({ w: 85, r: 11 }), set({ w: 85, r: 11 })] }] } }
+    completeSetFromLock(S, 0, 0, { fields: [{ k: 'w', v: 110 }] })
+    expect(S.active.entries[0].sets.map(x => x.w)).toEqual([110, 92.5, 92.5])
+    // a back-off set changed does not move the top set or the others
+    const S2 = { unit: 'kg', active: { cur: 0, entries: [{ id: 'bench', target: { sets: 3, reps: 8, backoff: bo }, sets: [set({ w: 100, done: true }), set({ w: 85, r: 11 }), set({ w: 85, r: 11 })] }] } }
+    completeSetFromLock(S2, 0, 1, { fields: [{ k: 'w', v: 80 }] })
+    expect(S2.active.entries[0].sets.map(x => x.w)).toEqual([100, 80, 80])
+  })
+
   it('leaves a weight the lifter did not touch unmarked', () => {
     const S = session()
     completeSetFromLock(S, 0, 0, { fields: [{ k: 'w', v: 60 }, { k: 'r', v: 8 }] })

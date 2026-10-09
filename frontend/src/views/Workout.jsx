@@ -14,6 +14,7 @@ import { speedUnitOf, toSpeed, fromSpeed } from '../lib/speed.js'
 import { cardioKindFromName, distanceKmOf, distanceStep, distanceUnit, fromKm, paceText, toKm, withDistanceKm, withMinutes } from '../lib/cardio.js'
 import { repUnitOf } from '../lib/functional.js'
 import { backoffRows, BACKOFF_PCT, BACKOFF_SETS } from '../lib/backoff.js'
+import { backoffOf, roleOf, topIndex, withBackoff } from '../lib/topset.js'
 import { beep, vibrate, unlock } from '../lib/sound.js'
 import { t, exerciseNameFor, exerciseNameClass } from '../lib/i18n.js'
 import { api, beacon } from '../lib/api.js'
@@ -611,8 +612,13 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
         const isFirstWarmup = warm && !warmBefore
         // Numbering restarts per phase: with two warm-ups the first work set reads 1, not 3.
         const phaseNum = entry.sets.slice(0, i + 1).filter(x => isWarmupRow(x) === warm).length
+        // With a top set + back-off plan the rows are named: the heavy one, then the lighter ones.
+        const role = roleOf(cfg, entry.sets, i)
+        const startsBackoff = role === 'backoff' && roleOf(cfg, entry.sets, i - 1) === 'top'
         return <div key={i}>
           {isFirstWarmup && <div className="setph">{t('Warm-up')}</div>}
+          {role === 'top' && <div className="setph">{t('Top set')}</div>}
+          {startsBackoff && <div className="setph">{t('Back-off')}</div>}
           {!warm && warmBefore && <div className="setsep" />}
           {perSide && !warm && isSideSet(s) ? (
             // Unilateral work set: the number sits beside a two-row L/R stack, each side logged
@@ -836,6 +842,12 @@ function ActiveWorkout() {
     if (field === 'w') {
       e.sets[i].weightOrigin = WEIGHT_ORIGIN_MANUAL
       e.sets = cascadeWeight(e.sets, i, v)
+      // The top set's weight is the one the back-off sets follow, at their percentage of it
+      // rather than the same weight (lib/topset.js).
+      if (i === topIndex(e.sets) && backoffOf(e.target)) {
+        const full = { ...e.target, id: e.id }
+        e.sets = withBackoff(e.sets, full, weightIncrement(full, S.unit))
+      }
     }
   })
   const modeAt = idx => modeOf({ ...(A.entries[idx].target || {}), id: A.entries[idx].id })

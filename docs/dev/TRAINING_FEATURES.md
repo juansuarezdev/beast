@@ -56,6 +56,24 @@ appends them to `CATALOGUE`, and `equipment.js` includes their equipment in the 
   rough bodyweight multiples for a man, scaled by 0.65 for a profile set to the female figure — a
   guide, and the card says so.
 
+## Top set + back-off
+
+`lib/topset.js`. An exercise config can carry `backoff: { pct, repsMin, reps }` (percentage 50–95 of the
+top set's weight, rep range up to 15). Applies to loaded rep work with two or more sets, not per side.
+
+- The **first work row is the top set**; the other work rows are back-off rows. Their weight is the
+  percentage of the top set's, on the exercise's step and always below it; their reps open at the
+  middle of the back-off range. `buildSets` and `buildPlannedEntry` apply it (after the prescription,
+  which speaks to every open row), and changing the top weight in the workout, or from the lock screen,
+  recomputes them. A back-off weight typed by hand, and a ticked row, are left alone.
+- **Progression reads the top set alone** (`readSession`): its reps decide `ok` / `low`, its effort
+  decides the RPE rule, and the heaviest weight is the top's. The session still has to be finished.
+- The rows are headed **Top set** / **Back-off** on the workout screen; the plan line reads
+  `1 × 6–10 + 2 × 10–14`; editing the back-off plan counts as a plan change (`planned.bo`).
+- Plan files carry it (`cleanBackoff` on the way out and in); the exercise config has the switch
+  "Top set + back-off" with the percentage and the rep range. The set menu's "Add back-off sets"
+  stays as the manual way to add them after a set.
+
 ## Not done
 
 Training blocks with a planned deload week, EMOM / AMRAP / Tabata timers, structured intervals, a
