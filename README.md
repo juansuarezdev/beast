@@ -4,52 +4,151 @@
 
 **A self-hosted gym and body-weight tracker you actually own.**
 
-<sub>Beast is a personal fork of [openGym](https://github.com/DuarteSantos8/openGym) by Duarte Santos, licensed AGPL-3.0-or-later.</sub>
-
 Plan your week, run guided workouts, log every set and your body weight —<br>
 on your phone, synced across your devices, behind your own passkey login.
 
-[![Discord](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Finvites%2Fe62jY6fwVb%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&label=Discord&logo=discord&logoColor=white&color=5865F2&style=for-the-badge)](https://discord.gg/e62jY6fwVb)
-[![Online](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Finvites%2Fe62jY6fwVb%3Fwith_counts%3Dtrue&query=%24.approximate_presence_count&suffix=%20online&label=&logo=discord&logoColor=white&color=3BA55C&style=for-the-badge)](https://discord.gg/e62jY6fwVb)
-[![GitHub stars](https://img.shields.io/github/stars/DuarteSantos8/openGym?style=for-the-badge&logo=github&logoColor=white&color=24292f)](https://github.com/DuarteSantos8/openGym/stargazers)
-
-[![Release](https://img.shields.io/github/v/release/DuarteSantos8/openGym?style=flat-square)](https://github.com/DuarteSantos8/openGym/releases)
-[![Tests](https://img.shields.io/github/actions/workflow/status/DuarteSantos8/openGym/test.yml?branch=main&label=tests&style=flat-square)](https://github.com/DuarteSantos8/openGym/actions/workflows/test.yml)
-[![Pipeline](https://gitlab.com/DuarteSantos8/opengym/badges/main/pipeline.svg?style=flat-square)](https://gitlab.com/DuarteSantos8/opengym/-/pipelines)
-[![Coverage](https://gitlab.com/DuarteSantos8/opengym/badges/main/coverage.svg?job=test:frontend&style=flat-square)](https://gitlab.com/DuarteSantos8/opengym/-/pipelines?ref=main)
 [![License: AGPL v3](https://img.shields.io/badge/license-AGPL--3.0-a3e635?style=flat-square)](LICENSE)
 
-[Website](https://opengym.duarte-santos.ch) ·
-[Live demo](https://opengym.duarte-santos.ch/demo/) ·
-[Android APK](https://github.com/DuarteSantos8/openGym/releases/latest) ·
 [Self-hosting guide](docs/SELF_HOSTING.md) ·
+[Mobile builds](docs/MOBILE.md) ·
 [Roadmap](ROADMAP.md) ·
 [Changelog](CHANGELOG.md)
 
 </div>
 
-<table align="center">
-<tr>
-<td align="center"><img src="assets/screenshots/home.png" alt="Home screen" width="230"><br><sub><b>Home</b> · today's workout and weight</sub></td>
-<td align="center"><img src="assets/screenshots/workout.png" alt="Workout screen" width="230"><br><sub><b>Guided workout</b> · demos and sets</sub></td>
-<td align="center"><img src="assets/screenshots/stats.png" alt="Stats screen" width="230"><br><sub><b>Stats</b> · heatmap, charts and PRs</sub></td>
-</tr>
-</table>
+> **Beast is a fork of [openGym](https://github.com/DuarteSantos8/openGym)** by Duarte Santos
+> (AGPL-3.0-or-later). The upstream project, its demo and its community live there.
+> This fork keeps the same license and adds the iOS-native and training features below.
+
+## What Beast adds on top of openGym
+
+**iOS native**
+
+- **Apple Health sync:** finished workouts are saved to Apple Health through a local Capacitor plugin.
+- **Live Activity:** the running workout sits on the lock screen. Tick the next set and adjust
+  each kind of set without opening the app.
+
+**Training**
+
+- **Strength progression:** rep records and percentages, RPE-based progression, strength level.
+- **Top set + back-off:** the first work set decides progression and the rest follow it at a percentage.
+- **Live comparison** with the last time you did the exercise, a record flash, smart rest and
+  "same as previous" set.
+- **Cardio by sport** with distance exercises and a weekly cardio goal.
+- **Goals card** on the home screen: sessions, cardio, lift and time goals besides body weight.
 
 ## Why Beast
 
-Most workout apps keep your data on their servers, push you towards a subscription, or vanish
-when the company does. Beast runs on your own box, keeps your data in a folder you control, and
-is yours to fork. It still behaves like a modern app: installable on the home screen, passkey
-sign-in, works offline, syncs between your phone and your laptop.
+Most workout apps keep your data on their servers, push you towards a subscription, or vanish when
+the company does. Beast runs on your own box, keeps your data in a folder you control, and is yours
+to fork. No account on someone else's server, no subscription, no ads, no telemetry.
 
-No account on someone else's server, no subscription, no ads, no telemetry. One
-`docker compose up` and it's running.
+Two things set it apart from a plain self-hosted tracker: it is **native on iOS** where it matters
+(the lock screen, Apple Health), and it takes **strength progression** seriously instead of just
+logging numbers.
 
-The [in-browser demo](https://opengym.duarte-santos.ch/demo/) is the real app with example data,
-if you want to try it before installing anything.
+## What Beast adds
 
-## Features
+### On your iPhone
+
+| | |
+|---|---|
+| **Live Activity** | While a workout runs, the lock screen and Dynamic Island name the next set (`Bench Press — Set 3/4 · 60 kg × 8`) and count the rest down. The countdown is drawn by iOS from an absolute end time, so it keeps ticking with the app in the background. |
+| **Tick sets from the lock screen** | With the app asleep, adjust the weight and reps with − / + and press **Done**. It saves the set, starts the rest it earns and shows the next one. Handles loaded lifts, bodyweight, holds, cardio and each side of a per-side set. iOS 17+. |
+| **Apple Health** | Each finished workout is written to Apple Health as a strength-training workout, so Bevel, Fitness and other apps that read Health count it. Write-only: Beast reads nothing back. |
+
+### In the gym
+
+- **Top set + back-off.** The first work set decides the progression and the remaining sets follow
+  it at a percentage you choose, recalculated whenever the top set changes.
+- **Strength records and levels.** Rep records (1 / 3 / 5 / 8 / 10), a percent-of-1RM table on each
+  exercise, and a card placing your main lifts on a beginner-to-beast scale from your latest weigh-in.
+- **Effort-aware progression.** A progression rule that follows the effort you rated (RPE / RIR).
+- **Live comparison.** Every done set shows how it moved against the same set last time
+  (`+2.5 kg`, `+1 rep`, `=`), a heavier set than your history flashes a record, and an optional
+  **Smart rest** scales the rest by reps and effort. A "same as previous" option copies the last set.
+- **Cardio by sport.** Runs, rides, rows and swims log a distance with the pace of their sport,
+  carries and sled work count metres, and 25 exercises the dataset lacked were added (swimming
+  strokes, rowing machine, cycling, landmine presses, sled, sandbag and kettlebell carries).
+- **Goals on Home.** Sessions per week, weekly cardio minutes, 1RM targets per lift and a time for
+  a distance (5 km under 30 min), next to the body-weight goal.
+- **Thumbnail list view.** Exercise animations as small, optional thumbnails, opened one at a time.
+
+Everything else (the planner, guided sessions, stats, sync, passkeys, imports, 17 languages) comes
+from openGym and is listed below.
+
+## Quick start
+
+You need [Docker](https://docs.docker.com/get-docker/) with Compose.
+
+```bash
+git clone https://github.com/juansuarezdev/beast
+cd beast
+cp .env.example .env
+docker compose up -d --build
+```
+
+> [!IMPORTANT]
+> Use `--build`. The prebuilt images that `docker-compose.yml` names are openGym's, and they do not
+> contain Beast's changes. Building locally is what gives you this fork. You don't need Node on the host.
+
+Open <http://localhost:8080>, tap **Create profile**, and you're in. The first start downloads the
+exercise media (about 140 MB) once.
+
+To reach it from your phone with passkeys you need HTTPS on a domain; that's a two-line change in
+`.env`. The [self-hosting guide](docs/SELF_HOSTING.md) walks through Cloudflare Tunnel, Caddy,
+Traefik and nginx, and there are separate guides for
+[HTTPS on a LAN](docs/SELF_HOSTING_HTTPS.md) and [Kubernetes](docs/SELF_HOSTING_KUBERNETES.md).
+
+<details>
+<summary><b>Configuration reference</b> (all through <code>.env</code>)</summary>
+
+| Variable | What it does | Default |
+|---|---|---|
+| `RP_ID` | Hostname passkeys are bound to | `localhost` |
+| `ORIGIN` | Full URL the app is served from | `http://localhost:8080` |
+| `WEB_PORT` | Host port for the web UI | `8080` |
+| `NGINX_PORT` | Port the web container listens on inside the container | `80` |
+| `BACKEND` | Name of the API service that `/api` is proxied to | `api` |
+| `PORT` | Port the API listens on; the web container proxies to the same value | `3000` |
+| `RP_NAME` | Name shown in the passkey prompt | `Beast` |
+| `SESSION_DAYS` | How long a sign-in lasts, in days | `90` |
+| `ADMIN_UIDS` | User ids that get the admin dashboard, comma-separated | *(none)* |
+| `INVITE_ONLY` | Require an invite code to create a profile | *(off)* |
+| `ALLOW_GUEST` | Offer "Continue without account"; `0` requires a profile | *(on)* |
+| `PASSWORD_LOGIN` | Offer name-and-password sign-in next to passkeys | *(off)* |
+| `TRUST_PROXY` | Let the sign-in throttle read the client address from proxy headers | `1` in `docker-compose.yml` |
+| `AUDIT_LOG` | Record sign-ins and admin actions; `0` records nothing | *(on)* |
+| `AUDIT_MAX` | Events kept in the activity log; `0` for no limit | `5000` |
+| `AUDIT_DAYS` | Days kept in the activity log; `0` keeps until `AUDIT_MAX` | `90` |
+| `AUDIT_IP` | Record the caller's address: `off`, `net` (network only) or `full` | `off` |
+| `VAPID_SUBJECT` | Contact URL sent with push notifications | your `ORIGIN` |
+| `API_TARGET` | API image to build: `default`, or `coach` with the Claude Agent SDK and Codex CLI | `default` |
+| `COACH_DISABLED` | `1` forces the AI coach off instance-wide | *(unset)* |
+
+Push-notification keys are generated on first run into `./data/vapid.json`. `DATA_DIR` is pinned to
+`/data` inside the container and mapped to `./data` on the host; change the volume, not the
+variable. The [self-hosting guide](docs/SELF_HOSTING.md) covers every option in detail.
+
+</details>
+
+## iPhone app
+
+Apple Health and the Live Activity only exist in the **native iOS app**, which you build onto your
+own device with Xcode (the web app and the home-screen PWA don't have them).
+
+1. `cd frontend && npm install && npm run build:mobile && npx cap open ios`
+2. In Xcode, set your own **bundle ID and team** under *Signing & Capabilities* for both the `App`
+   target and the `BeastLiveActivity` widget extension. The App target needs the **HealthKit** capability.
+3. Choose your iPhone and press **Run**. Turn on *Settings → During a workout → Save workouts to
+   Apple Health* inside the app.
+
+A build signed with a free Apple ID expires after 7 days and has to be reinstalled. Requirements,
+limits and the code layout are in [docs/MOBILE.md](docs/MOBILE.md).
+
+## Everything inherited from openGym
+
+### Features
 
 **Planning**
 
@@ -112,76 +211,6 @@ if you want to try it before installing anything.
 
 The full list of what changed release by release is in the [changelog](CHANGELOG.md).
 
-## Quick start
-
-You need [Docker](https://docs.docker.com/get-docker/) with Compose.
-
-```bash
-git clone https://github.com/DuarteSantos8/openGym
-cd openGym
-cp .env.example .env
-docker compose pull      # prebuilt images, amd64 + arm64 (skip this to build from source)
-docker compose up -d
-```
-
-Open <http://localhost:8080>, tap **Create profile**, and you're in. The first start downloads
-the exercise media (about 140 MB) once.
-
-To reach it from your phone with passkeys you need HTTPS on a domain; that's a two-line change in
-`.env`. The [self-hosting guide](docs/SELF_HOSTING.md) walks through Cloudflare Tunnel, Caddy,
-Traefik and nginx, and there are separate guides for
-[HTTPS on a LAN](docs/SELF_HOSTING_HTTPS.md) and [Kubernetes](docs/SELF_HOSTING_KUBERNETES.md).
-
-> [!NOTE]
-> Images are published from the same tag to `registry.gitlab.com/duartesantos8/opengym/{api,web}`
-> (what `docker-compose.yml` pulls) and `ghcr.io/duartesantos8/opengym-{api,web}`. Swap the
-> `image:` lines if you prefer GHCR, or run `docker compose up -d --build` to build locally. Either
-> way you don't need Node on the host.
-
-<details>
-<summary><b>Configuration reference</b> (all through <code>.env</code>)</summary>
-
-| Variable | What it does | Default |
-|---|---|---|
-| `RP_ID` | Hostname passkeys are bound to | `localhost` |
-| `ORIGIN` | Full URL the app is served from | `http://localhost:8080` |
-| `WEB_PORT` | Host port for the web UI | `8080` |
-| `NGINX_PORT` | Port the web container listens on inside the container | `80` |
-| `BACKEND` | Name of the API service that `/api` is proxied to | `api` |
-| `PORT` | Port the API listens on; the web container proxies to the same value | `3000` |
-| `RP_NAME` | Name shown in the passkey prompt | `Beast` |
-| `SESSION_DAYS` | How long a sign-in lasts, in days | `90` |
-| `ADMIN_UIDS` | User ids that get the admin dashboard, comma-separated | *(none)* |
-| `INVITE_ONLY` | Require an invite code to create a profile | *(off)* |
-| `ALLOW_GUEST` | Offer "Continue without account"; `0` requires a profile | *(on)* |
-| `PASSWORD_LOGIN` | Offer name-and-password sign-in next to passkeys | *(off)* |
-| `TRUST_PROXY` | Let the sign-in throttle read the client address from proxy headers | `1` in `docker-compose.yml` |
-| `AUDIT_LOG` | Record sign-ins and admin actions; `0` records nothing | *(on)* |
-| `AUDIT_MAX` | Events kept in the activity log; `0` for no limit | `5000` |
-| `AUDIT_DAYS` | Days kept in the activity log; `0` keeps until `AUDIT_MAX` | `90` |
-| `AUDIT_IP` | Record the caller's address: `off`, `net` (network only) or `full` | `off` |
-| `VAPID_SUBJECT` | Contact URL sent with push notifications | your `ORIGIN` |
-| `API_TARGET` | API image to build: `default`, or `coach` with the Claude Agent SDK and Codex CLI | `default` |
-| `COACH_DISABLED` | `1` forces the AI coach off instance-wide | *(unset)* |
-
-Push-notification keys are generated on first run into `./data/vapid.json`. `DATA_DIR` is pinned to
-`/data` inside the container and mapped to `./data` on the host; change the volume, not the
-variable. The [self-hosting guide](docs/SELF_HOSTING.md) covers every option in detail.
-
-</details>
-
-## Phone app
-
-The same codebase builds a standalone app with Capacitor: no account, no server, everything stays
-on the phone, with native reminders and a rest countdown in the notification shade.
-
-- **Android:** download the signed APK from the [latest release](https://github.com/DuarteSantos8/openGym/releases/latest)
-  or the [website](https://opengym.duarte-santos.ch). Each build sits next to its `.sha256`, and
-  the app checks for updates itself. Beast is deliberately not on the Play Store.
-- **iPhone:** Apple doesn't allow installs outside the App Store. Self-host and add the PWA to your
-  home screen from Safari, or build the native app onto your own device with Xcode.
-
-Details and build instructions: [docs/MOBILE.md](docs/MOBILE.md).
 
 ## How it works
 
@@ -200,8 +229,7 @@ Details and build instructions: [docs/MOBILE.md](docs/MOBILE.md).
 
 The training logic (progression rules, 1RM, how a logged session is read back) lives in pure
 functions under `frontend/src/lib/` with tests beside them. The HTTP API is documented as an
-OpenAPI spec in [`api/openapi.yaml`](api/openapi.yaml), browsable at
-[opengym.duarte-santos.ch/api.html](https://opengym.duarte-santos.ch/api.html).
+OpenAPI spec in [`api/openapi.yaml`](api/openapi.yaml).
 
 ### How sync works
 
@@ -233,6 +261,7 @@ Everything lives in `./data` on your host:
 Back up `./data` and you've backed up everything. Passkey private keys never reach the server; they
 stay in your phone's secure hardware or your password manager.
 
+
 ## Documentation
 
 The [documentation index](docs/README.md) sorts every guide by who it's for. The most used ones:
@@ -247,79 +276,6 @@ The [documentation index](docs/README.md) sorts every guide by who it's for. The
 | Contribute code | [Contributing](CONTRIBUTING.md) |
 | Report a security problem | [Security](SECURITY.md) |
 
-## Roadmap
-
-A release roughly every two weeks, each small and themed. The full plan is in
-[ROADMAP.md](ROADMAP.md), and the issues sit in the
-[GitHub milestones](https://github.com/DuarteSantos8/openGym/milestones).
-
-| Release | Planned | Theme |
-|---|---|---|
-| v1.3.10 | Oct 2026 | Session queue and rotation |
-| v1.3.11 | Nov 2026 | Programmes and phases |
-| v1.3.12–13 | Nov–Dec 2026 | Progression engine: AMRAP, %1RM, 5/3/1 |
-| v1.3.14 | Dec 2026 | Cardio, exercise alternatives, groups |
-| v1.4.0 | Jan 2027 | Database storage (the one compatibility break) |
-| v1.4.1–3 | Jan–Feb 2027 | Search, OIDC login, trainer role |
-| v1.4.4–7 | Mar–Apr 2027 | iOS app, Health Connect, catalogue, skins |
-
-## Community
-
-- **[Discord](https://discord.gg/e62jY6fwVb)** for release announcements, self-hosting help and
-  quick back-and-forth. Usually the fastest way to get an answer.
-- **[Discussions](https://github.com/DuarteSantos8/openGym/discussions)** for questions and ideas
-  you want the next person to find by searching.
-- **[Issues](https://github.com/DuarteSantos8/openGym/issues)** for reproducible bugs and agreed-on
-  work. Login trouble is almost always an `RP_ID`/`ORIGIN` mismatch; the
-  [self-hosting guide](docs/SELF_HOSTING.md) covers it.
-- **[Pull requests](https://github.com/DuarteSantos8/openGym/pulls)** are welcome; start with
-  [CONTRIBUTING.md](CONTRIBUTING.md).
-
-<a href="https://github.com/DuarteSantos8/openGym/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=DuarteSantos8/openGym&max=60" alt="Contributors">
-</a>
-
-### Where the code lives
-
-GitHub is the home of the project. [gitlab.com/DuarteSantos8/opengym](https://gitlab.com/DuarteSantos8/opengym)
-is a mirror, updated by a GitHub Actions workflow on every push to `main` and every release tag. It
-exists because its CI builds the release artifacts: the signed APK, the multi-arch images and the
-SBOMs. Nothing is merged there by hand. In the changelog, `!NN` refers to a GitLab merge request
-from the weeks in August and September 2026 when the project lived there.
-
-## How Beast is built
-
-People have asked about this, so plainly: **Beast is developed with
-[Claude Code](https://claude.com/claude-code)**, Anthropic's coding agent. A large share of the
-code, tests and documentation is drafted in Claude Code sessions, and the repository carries a
-[`CLAUDE.md`](CLAUDE.md) with the project context those sessions start from.
-
-What that does and doesn't mean:
-
-- **A person decides and ships.** What goes in, what gets reviewed and merged, and every release
-  are the maintainer's call. Changes are tested on a staging instance and on real phones before
-  they are tagged.
-- **Tests hold the logic in place.** The training logic is covered by unit tests, and pull requests
-  run the frontend, API and MCP suites in CI. That is the guard against plausible-looking code
-  that is wrong, whoever or whatever wrote it.
-- **The app itself doesn't need an LLM.** Nothing in a default install calls an AI service. The AI
-  coach and the MCP server are opt-in, and the coach only talks to the provider you configure, with
-  your own key.
-
-Community pull requests are written by their authors, with whatever tools they like, and reviewed
-the same way.
-
-## Support
-
-Beast is free and stays free: AGPL, no paid tier, nothing held back for sponsors. If it replaced a
-paid tracker for you and you'd like to chip in, there's a coffee button below. A star, a bug report
-or a pull request helps just as much.
-
-<a href="https://buymeacoffee.com/duartesantos" target="_blank">
-  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="60" width="217">
-</a>
-
-[![Star History Chart](https://api.star-history.com/svg?repos=duartesantos8/opengym&type=Date)](https://star-history.com/#DuarteSantos8/openGym&Date)
 
 ## License
 
@@ -338,3 +294,11 @@ version's source under the same license.
 > media, clear it with the rights holder first.
 
 Full third-party notices, including the body-diagram geometry, are in [NOTICE.md](NOTICE.md).
+
+
+## Credits
+
+Beast is a fork of [openGym](https://github.com/DuarteSantos8/openGym) by **Duarte Santos**, which
+does the heavy lifting: the planner, the exercise library, sync, passkeys and the self-hosting
+setup. Upstream's community, releases and demo live there. Beast keeps the same license
+(AGPL-3.0-or-later) and its [notices](NOTICE.md).
