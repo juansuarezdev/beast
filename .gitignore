@@ -24,3 +24,7 @@ frontend/bundle-size.json
 
 # CodeGraph index (local, rebuilt with `codegraph init`)
 .codegraph/
+
+# Local assistant config
+CLAUDE.md
+.mcp.json
