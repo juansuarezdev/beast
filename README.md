@@ -51,7 +51,7 @@ logging numbers.
 
 ### On your iPhone
 
-| | |
+| Feature | What it does |
 |---|---|
 | **Live Activity** | While a workout runs, the lock screen and Dynamic Island name the next set (`Bench Press — Set 3/4 · 60 kg × 8`) and count the rest down. The countdown is drawn by iOS from an absolute end time, so it keeps ticking with the app in the background. |
 | **Tick sets from the lock screen** | With the app asleep, adjust the weight and reps with − / + and press **Done**. It saves the set, starts the rest it earns and shows the next one. Handles loaded lifts, bodyweight, holds, cardio and each side of a per-side set. iOS 17+. |
