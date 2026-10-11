@@ -37,6 +37,15 @@ on your phone, synced across your devices, behind your own passkey login.
 - **Cardio by sport** with distance exercises and a weekly cardio goal.
 - **Goals card** on the home screen: sessions, cardio, lift and time goals besides body weight.
 
+<table align="center">
+<tr>
+<td align="center"><img src="assets/screenshots/home.png" alt="Home screen" width="190"><br><sub><b>Home</b> · today and goals</sub></td>
+<td align="center"><img src="assets/screenshots/plan.png" alt="Weekly plan" width="190"><br><sub><b>Plan</b> · your weekly routine</sub></td>
+<td align="center"><img src="assets/screenshots/workout.png" alt="Guided workout" width="190"><br><sub><b>Workout</b> · progression and plates</sub></td>
+<td align="center"><img src="assets/screenshots/stats.png" alt="Stats screen" width="190"><br><sub><b>Stats</b> · heatmap and muscle map</sub></td>
+</tr>
+</table>
+
 ## Why Beast
 
 Most workout apps keep your data on their servers, push you towards a subscription, or vanish when
