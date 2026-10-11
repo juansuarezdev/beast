@@ -1,11 +1,23 @@
-# Third-party notices
+# Notices
 
-Beast — Copyright (C) 2026 Duarte Santos.
-Beast's own code is licensed under the **GNU AGPL v3.0** (see [LICENSE](LICENSE)).
+## Origin and modifications
+
+Beast is a **modified version of [openGym](https://github.com/DuarteSantos8/openGym)**.
+
+- Original work: Copyright (C) 2026 Duarte Santos and the openGym contributors.
+- Modifications: Copyright (C) 2026 Juan Jesús Suárez Sánchez, made from 7 October 2026. They
+  rename the app to Beast and add a new icon, Apple Health sync, the iOS Live Activity, strength
+  progression (top set and back-off, rep records, strength level), cardio by sport and goals.
+  The complete list of changes, with dates and authors, is the git history of this repository.
+
+Beast's own code, original and modified, is licensed under the **GNU AGPL v3.0 or later**
+(see [LICENSE](LICENSE)).
+
+# Third-party notices
 
 ## App store exception
 
-As an additional permission under section 7 of the AGPL v3.0, the copyright holder permits
+As an additional permission under section 7 of the AGPL v3.0, the original copyright holder (Duarte Santos) permits
 distribution of the Beast mobile application through app store platforms (such as the
 Apple App Store and Google Play) whose terms of service would otherwise be incompatible
 with the AGPL, provided the corresponding source code remains available under the AGPL at
