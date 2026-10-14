@@ -1,11 +1,16 @@
 import UIKit
 import Capacitor
+import AVFoundation
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        // The rest chime is Web Audio. Left to WebKit it gets either Ambient (muted by the silent
+        // switch) or, via navigator.audioSession 'playback', an exclusive session that pauses the
+        // user's music. Playback + mixWithOthers sounds on silent and lets music keep playing.
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
+        try? AVAudioSession.sharedInstance().setActive(true)
         return true
     }
 

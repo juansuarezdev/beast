@@ -1,3 +1,5 @@
+import { MOBILE } from './mobile.js'
+
 // WebAudio beeps + haptics (ported from the vanilla app). `enabled` gates sound.
 //
 // iOS needs three things a desktop browser does not (#152, "flash but no beep"):
@@ -122,7 +124,9 @@ export const playOnSilentSupported = () => {
   return /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)
 }
 export function setPlayOnSilent(on) {
-  if (!playOnSilentSupported()) return
+  // The native iOS app sets its own mixing session (AppDelegate.swift); WebKit's exclusive
+  // 'playback' type would override it and pause the user's music.
+  if (MOBILE || !playOnSilentSupported()) return
   try { navigator.audioSession.type = on ? 'playback' : 'auto' } catch (e) { /* */ }
 }
 
