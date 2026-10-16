@@ -88,7 +88,7 @@ export function armRestAlert(at, opts = {}) {
     let kind = 'failed'
     try { kind = await deliver(alert) } catch { kind = 'failed' }
     if (mine !== token) return false
-    return kind === 'android'
+    return kind === 'android' || kind === 'ios'
   })
 }
 
@@ -147,9 +147,34 @@ async function ensureNotifPermission() {
   }
 }
 
+// iOS has no alarm to book, but a local notification still fires with the screen locked and the
+// WebView frozen. Its sound is the chime bundled with the app (rest-chime.wav); a notification
+// with no sound named is silent.
+async function isIOS() {
+  if (!MOBILE) return false
+  try {
+    const { Capacitor } = await import('@capacitor/core')
+    return Capacitor.getPlatform() === 'ios'
+  } catch { return false }
+}
+
+async function deliverIOS(alert) {
+  if (!(await ensureNotifPermission())) return 'failed'
+  const { LocalNotifications } = await import('@capacitor/local-notifications')
+  await LocalNotifications.cancel({ notifications: [{ id: alert.id }] }).catch(() => {})
+  await LocalNotifications.schedule({ notifications: [{
+    id: alert.id,
+    title: alert.title,
+    body: '',
+    schedule: { at: new Date(alert.at), allowWhileIdle: true },
+    ...(alert.sound ? { sound: 'rest-chime.wav' } : {}),
+  }] })
+  return 'ios'
+}
+
 async function deliver(alert) {
   const p = await restPlugin()
-  if (!p) return 'skipped'
+  if (!p) return (await isIOS()) ? deliverIOS(alert) : 'skipped'
   const { RestAlert } = p
   await ensureNotifPermission()
   // Sound still schedules when notification permission is missing: the alarm tone does
@@ -181,5 +206,9 @@ async function deliver(alert) {
 
 async function cancelDelivered() {
   const p = await restPlugin()
-  if (p) await p.RestAlert.cancel({ id: REST_ALERT_ID })
+  if (p) { await p.RestAlert.cancel({ id: REST_ALERT_ID }); return }
+  if (await isIOS()) {
+    const { LocalNotifications } = await import('@capacitor/local-notifications')
+    await LocalNotifications.cancel({ notifications: [{ id: REST_ALERT_ID }] })
+  }
 }

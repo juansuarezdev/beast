@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AA00000000000000000C0002 /* rest-chime.wav in Resources */ = {isa = PBXBuildFile; fileRef = AA00000000000000000C0001 /* rest-chime.wav */; };
 		0BE3CE631B6A4180D9BF3DA8 /* BeastLiveStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F01C87B72BFDB7F6260F525 /* BeastLiveStore.swift */; };
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
 		50379B232058CBB4000EE86E /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 50379B222058CBB4000EE86E /* capacitor.config.json */; };
@@ -60,6 +61,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AA00000000000000000C0001 /* rest-chime.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "rest-chime.wav"; sourceTree = "<group>"; };
 		2114137CFB0D1C72DDBB1F6A /* BeastActivityAttributes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BeastActivityAttributes.swift; sourceTree = "<group>"; };
 		26C3C6D4AB29A2265C9021DE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
@@ -177,6 +179,7 @@
 				AA0100000000000000000015 /* App.entitlements */,
 				504EC30B1FED79650016851F /* Main.storyboard */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
+				AA00000000000000000C0001 /* rest-chime.wav */,
 				504EC3101FED79650016851F /* LaunchScreen.storyboard */,
 				504EC3131FED79650016851F /* Info.plist */,
 				2FAD9762203C412B000D30F8 /* config.xml */,
@@ -295,6 +298,7 @@
 				504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */,
 				50B271D11FEDC1A000F3C39B /* public in Resources */,
 				504EC30F1FED79650016851F /* Assets.xcassets in Resources */,
+				AA00000000000000000C0002 /* rest-chime.wav in Resources */,
 				50379B232058CBB4000EE86E /* capacitor.config.json in Resources */,
 				504EC30D1FED79650016851F /* Main.storyboard in Resources */,
 				2FAD9763203C412B000D30F8 /* config.xml in Resources */,
